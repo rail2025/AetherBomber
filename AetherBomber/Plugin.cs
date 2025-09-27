@@ -1,3 +1,4 @@
+// AetherBomber/Plugin.cs
 using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;
@@ -10,6 +11,7 @@ using AetherBomber.Networking;
 using AetherBomber.Game;
 using System.Collections.Concurrent;
 using System;
+using Dalamud.Game.ClientState.GamePad;
 
 namespace AetherBomber;
 
@@ -23,9 +25,9 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static ITextureProvider TextureProvider { get; private set; } = null!;
     [PluginService] internal static ICondition Condition { get; private set; } = null!;
     [PluginService] internal static IPartyList? PartyList { get; private set; } = null!;
+    [PluginService] internal static IGamepadState? GamepadState { get; private set; } = null!;
 
     private const string CommandName = "/aetherbomber";
-   // private const string SecondWindowCommandName = "/aetherbomber2";
 
     public Configuration Configuration { get; init; }
     public NetworkManager NetworkManager { get; init; }
@@ -50,7 +52,7 @@ public sealed class Plugin : IDalamudPlugin
         AudioManager = new AudioManager(this.Configuration);
 
         ConfigWindow = new ConfigWindow(this, this.AudioManager);
-        MainWindow = new MainWindow(this, this.AudioManager, "");
+        MainWindow = new MainWindow(this, this.AudioManager);
         AboutWindow = new AboutWindow();
         MultiplayerWindow = new MultiplayerWindow(this);
 
@@ -63,11 +65,6 @@ public sealed class Plugin : IDalamudPlugin
         {
             HelpMessage = "Opens the AetherBomber game window."
         });
-
-       // CommandManager.AddHandler(SecondWindowCommandName, new CommandInfo(OnSecondWindowCommand)
-        //{
-           // HelpMessage = "Opens a second AetherBomber window for testing."
-        //});
 
         ClientState.TerritoryChanged += OnTerritoryChanged;
         Condition.ConditionChange += OnConditionChanged;
@@ -95,7 +92,6 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.OpenMainUi -= ToggleMainUI;
 
         CommandManager.RemoveHandler(CommandName);
-        //CommandManager.RemoveHandler(SecondWindowCommandName);
 
         this.WindowSystem.RemoveAllWindows();
         ConfigWindow.Dispose();
@@ -113,7 +109,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         if (this.secondWindow == null)
         {
-            this.secondWindow = new MainWindow(this, this.AudioManager, " 2");
+            this.secondWindow = new MainWindow(this, this.AudioManager);
             this.WindowSystem.AddWindow(this.secondWindow);
         }
         this.secondWindow.Toggle();
@@ -141,7 +137,7 @@ public sealed class Plugin : IDalamudPlugin
             this.MultiplayerWindow.SetConnectionStatus("Connected", false);
             this.MultiplayerWindow.IsOpen = false;
             this.MainWindow.IsOpen = true;
-            this.MainWindow.StartMultiplayerGame(passphrase);
+            // this.MainWindow.StartMultiplayerGame(passphrase);
         });
     }
 
@@ -149,16 +145,22 @@ public sealed class Plugin : IDalamudPlugin
     {
         mainThreadActions.Enqueue(() => {
             this.MultiplayerWindow.SetConnectionStatus("Disconnected", true);
+            /*
             if (this.MainWindow.IsOpen && this.MainWindow.GetMultiplayerGameSession() != null)
             {
                 this.MainWindow.GetMultiplayerGameSession()?.GoToMainMenu();
             }
+            */
         });
     }
 
     private void OnNetworkError(string message) => mainThreadActions.Enqueue(() => this.MultiplayerWindow.SetConnectionStatus(message, true));
 
-    private void OnGameStateUpdateReceived(byte[] state) => mainThreadActions.Enqueue(() => this.MainWindow.GetMultiplayerGameSession()?.ReceiveOpponentBoardState(state));
+    private void OnGameStateUpdateReceived(byte[] state)
+    {
+        // mainThreadActions.Enqueue(() => this.MainWindow.GetMultiplayerGameSession()?.ReceiveOpponentBoardState(state));
+    }
+
 
     private void OnTerritoryChanged(ushort territoryTypeId)
     {
