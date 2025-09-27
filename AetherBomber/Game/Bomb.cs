@@ -1,22 +1,26 @@
 // AetherBomber/Game/Bomb.cs
 using Dalamud.Bindings.ImGui;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace AetherBomber.Game;
 
 public class Bomb
 {
+    public Character Owner { get; }
     public Vector2 GridPos { get; }
     public float Timer { get; private set; }
     public float ExplosionTimer { get; private set; }
     public bool IsExploding { get; private set; }
+    public HashSet<Vector2> ExplosionPath { get; private set; } = new();
 
-    private const float DetonationTime = 4.0f; // 3 seconds flashing + 1 second final warning
+    private const float DetonationTime = 4.0f;
     private const float ExplosionDuration = 0.5f;
 
-    public Bomb(Vector2 gridPos)
+    public Bomb(Vector2 gridPos, Character owner)
     {
         this.GridPos = gridPos;
+        this.Owner = owner;
         this.Timer = DetonationTime;
         this.IsExploding = false;
     }
@@ -39,20 +43,24 @@ public class Bomb
     }
 
     public bool IsFinished() => this.IsExploding && this.ExplosionTimer <= 0;
-
+    public void SetExplosionPath(HashSet<Vector2> path)
+    {
+        if (ExplosionPath.Count == 0)
+        {
+            ExplosionPath = path;
+        }
+    }
     public uint GetOutlineColor()
     {
-        // Final second warning (flashing orange and red)
         if (this.Timer <= 1.0f)
         {
-            // Flashes between orange and red every 0.1 seconds
             return (int)(this.Timer * 10) % 2 == 0
-                ? ImGui.GetColorU32(new Vector4(1.0f, 0.0f, 0.0f, 1.0f)) // Red
-                : ImGui.GetColorU32(new Vector4(1.0f, 0.5f, 0.0f, 1.0f)); // Orange
+                ? ImGui.GetColorU32(new Vector4(1.0f, 0.0f, 0.0f, 1.0f))
+                : ImGui.GetColorU32(new Vector4(1.0f, 0.5f, 0.0f, 1.0f));
         }
-        // First 3 seconds (flashing red)
         return (int)(this.Timer * 2) % 2 == 0
-            ? ImGui.GetColorU32(new Vector4(1.0f, 0.0f, 0.0f, 1.0f)) // Red
-            : ImGui.GetColorU32(new Vector4(0.0f, 0.0f, 0.0f, 0.0f));  // Transparent
+            ? ImGui.GetColorU32(new Vector4(1.0f, 0.0f, 0.0f, 1.0f))
+            : ImGui.GetColorU32(new Vector4(0.0f, 0.0f, 0.0f, 0.0f));
     }
 }
+

@@ -24,9 +24,7 @@ public class TextureManager : IDisposable
 
     private void LoadGameTextures()
     {
-        // Add names of your new game textures here, e.g., "player", "bomb_item", "wall_breakable"
-        // Using the original "bomb" icon for now as a placeholder
-        var textureNames = new[] { "bomb" };
+        var textureNames = new[] { "bomb", "chest", "mirror", "dps", "healer", "tank", "bird" };
         foreach (var name in textureNames)
         {
             var texture = LoadTextureFromResource($"AetherBomber.Images.{name}.png");
