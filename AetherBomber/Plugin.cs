@@ -24,8 +24,8 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static ICondition Condition { get; private set; } = null!;
     [PluginService] internal static IPartyList? PartyList { get; private set; } = null!;
 
-    private const string CommandName = "/abreaker";
-   // private const string SecondWindowCommandName = "/abreaker2";
+    private const string CommandName = "/aetherbomber";
+   // private const string SecondWindowCommandName = "/aetherbomber2";
 
     public Configuration Configuration { get; init; }
     public NetworkManager NetworkManager { get; init; }
