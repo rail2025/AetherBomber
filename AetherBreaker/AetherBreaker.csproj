@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/13.0.0">
+  <PropertyGroup>
+    <Version>2.1.0.2</Version>
+    <TargetFramework>net9.0</TargetFramework>
+    <Description>A game to play when dead. Open with /abreaker.</Description>
+    <PackageProjectUrl>https://github.com/goatcorp/SamplePlugin</PackageProjectUrl>
+    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\background 2.png" />
+    <EmbeddedResource Include="Images\background 3.png" />
+    <EmbeddedResource Include="Images\background.png" />
+    <EmbeddedResource Include="Music\bgm1.mp3" />
+    <EmbeddedResource Include="Music\bgm2.mp3" />
+    <EmbeddedResource Include="Music\bgm5Hotw.mp3" />
+    <EmbeddedResource Include="Music\bgm4GQ.mp3" />
+    <EmbeddedResource Include="Images\icon.png" />
+    <EmbeddedResource Include="Images\bomb.png" />
+    <EmbeddedResource Include="Images\bird.png" />
+    <EmbeddedResource Include="Images\dps.png" />
+    <EmbeddedResource Include="Images\healer.png" />
+    <EmbeddedResource Include="Images\tank.png" />
+    <EmbeddedResource Include="Images\chest.png" />
+    <EmbeddedResource Include="Images\mirror.png" />
+    <EmbeddedResource Include="Images\paint.png" />
+    <EmbeddedResource Include="Images\star.png" />
+    <Content Include="Music\bgm3.mp3" />
+    <EmbeddedResource Include="Sfx\chest.wav" />
+    <EmbeddedResource Include="Music\bgm6MR.mp3" />
+    <EmbeddedResource Include="Music\bgm7Pfm.mp3" />
+    <EmbeddedResource Include="Music\bonus_1.mp3" />
+    <EmbeddedResource Include="Music\bonus_2.mp3" />
+    <EmbeddedResource Include="Music\bonus_3.mp3" />
+    <EmbeddedResource Include="Music\bonus_4.mp3" />
+    <EmbeddedResource Include="Music\bonus_5.mp3" />
+    <Content Include="repo.json" />
+    <EmbeddedResource Include="Sfx\bomb.mp3" />
+    <EmbeddedResource Include="Sfx\clearstage.mp3" />
+    <EmbeddedResource Include="Sfx\advance.wav" />
+    <EmbeddedResource Include="Sfx\bounce.wav" />
+    <EmbeddedResource Include="Sfx\drop.wav" />
+    <EmbeddedResource Include="Sfx\land.wav" />
+    <EmbeddedResource Include="Sfx\pop.wav" />
+    <EmbeddedResource Include="Sfx\shot.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="DalamudPackager" Version="13.0.0" />
+  </ItemGroup>
+</Project>
