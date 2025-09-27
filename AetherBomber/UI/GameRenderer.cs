@@ -195,6 +195,9 @@ public class GameRenderer : IDisposable
 
     private void DrawCharacters(ImDrawListPtr drawList, Vector2 gridOrigin, float cellSize, List<Character> characters)
     {
+        var windowPos = ImGui.GetWindowPos();
+        var windowSize = ImGui.GetWindowSize();
+
         foreach (var character in characters)
         {
             if (!character.IsActive && !character.IsBeingYeeted) continue;
@@ -202,6 +205,13 @@ public class GameRenderer : IDisposable
             var size = character.GetRenderScale(cellSize);
             var center = character.GetRenderPosition(gridOrigin, cellSize) + new Vector2(size / 2, size / 2);
             var radius = size / 2;
+
+            if (center.X < windowPos.X - size || center.X > windowPos.X + windowSize.X + size ||
+                center.Y < windowPos.Y - size || center.Y > windowPos.Y + windowSize.Y + size)
+            {
+                continue;
+            }
+
 
             IDalamudTextureWrap? texture = character.Type switch
             {
