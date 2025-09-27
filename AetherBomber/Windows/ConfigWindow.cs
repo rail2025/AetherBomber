@@ -2,17 +2,17 @@ using System;
 using System.Numerics;
 using Dalamud.Interface.Windowing;
 using Dalamud.Bindings.ImGui;
-using AetherBreaker.Audio;
+using AetherBomber.Audio;
 
 
-namespace AetherBreaker.Windows;
+namespace AetherBomber.Windows;
 
 public class ConfigWindow : Window, IDisposable
 {
     private readonly Configuration configuration;
     private readonly AudioManager audioManager;
 
-    public ConfigWindow(Plugin plugin, AudioManager audioManager) : base("AetherBreaker Configuration")
+    public ConfigWindow(Plugin plugin, AudioManager audioManager) : base("AetherBomber Configuration")
     {
         this.Size = new Vector2(300, 250);
         this.SizeCondition = ImGuiCond.FirstUseEver;

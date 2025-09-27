@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using AetherBreaker.Audio;
-using AetherBreaker.Game;
-using AetherBreaker.UI;
+using AetherBomber.Audio;
+using AetherBomber.Game;
+using AetherBomber.UI;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using Dalamud.Bindings.ImGui;
 
-namespace AetherBreaker.Windows;
+namespace AetherBomber.Windows;
 
 public class MainWindow : Window, IDisposable
 {
@@ -30,7 +30,7 @@ public class MainWindow : Window, IDisposable
     public static Vector2 ScaledWindowSize => BaseWindowSize * ImGuiHelpers.GlobalScale;
     public const float HudAreaHeight = 110f;
 
-    public MainWindow(Plugin plugin, AudioManager audioManager, string idSuffix = "") : base("AetherBreaker" + idSuffix)
+    public MainWindow(Plugin plugin, AudioManager audioManager, string idSuffix = "") : base("AetherBomber" + idSuffix)
     {
         this.plugin = plugin;
         this.audioManager = audioManager;

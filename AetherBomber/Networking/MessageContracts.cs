@@ -1,4 +1,4 @@
-namespace AetherBreaker.Networking
+namespace AetherBomber.Networking
 {
     /// <summary>
     /// Defines the different types of messages that can be sent between the client and server.

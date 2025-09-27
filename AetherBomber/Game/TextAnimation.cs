@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
 
-namespace AetherBreaker.Game;
+namespace AetherBomber.Game;
 
 /// <summary>
 /// Defines the behavior types for text animations.

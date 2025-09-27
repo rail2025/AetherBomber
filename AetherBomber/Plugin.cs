@@ -3,15 +3,15 @@ using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin.Services;
-using AetherBreaker.Windows;
-using AetherBreaker.Audio;
+using AetherBomber.Windows;
+using AetherBomber.Audio;
 using Dalamud.Game.ClientState.Conditions;
-using AetherBreaker.Networking;
-using AetherBreaker.Game;
+using AetherBomber.Networking;
+using AetherBomber.Game;
 using System.Collections.Concurrent;
 using System;
 
-namespace AetherBreaker;
+namespace AetherBomber;
 
 public sealed class Plugin : IDalamudPlugin
 {
@@ -30,7 +30,7 @@ public sealed class Plugin : IDalamudPlugin
     public Configuration Configuration { get; init; }
     public NetworkManager NetworkManager { get; init; }
     public AudioManager AudioManager { get; init; }
-    public readonly WindowSystem WindowSystem = new("AetherBreaker");
+    public readonly WindowSystem WindowSystem = new("AetherBomber");
     private ConfigWindow ConfigWindow { get; init; }
     private MainWindow MainWindow { get; init; }
     private AboutWindow AboutWindow { get; init; }
@@ -61,12 +61,12 @@ public sealed class Plugin : IDalamudPlugin
 
         CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
         {
-            HelpMessage = "Opens the AetherBreaker game window."
+            HelpMessage = "Opens the AetherBomber game window."
         });
 
        // CommandManager.AddHandler(SecondWindowCommandName, new CommandInfo(OnSecondWindowCommand)
         //{
-           // HelpMessage = "Opens a second AetherBreaker window for testing."
+           // HelpMessage = "Opens a second AetherBomber window for testing."
         //});
 
         ClientState.TerritoryChanged += OnTerritoryChanged;

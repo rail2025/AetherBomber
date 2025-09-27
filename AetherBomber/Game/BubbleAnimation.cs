@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using Dalamud.Bindings.ImGui;
 
-namespace AetherBreaker.Game;
+namespace AetherBomber.Game;
 
 /// <summary>
 /// Defines the types of animations a bubble can have.

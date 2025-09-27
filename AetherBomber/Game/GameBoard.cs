@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace AetherBreaker.Game;
+namespace AetherBomber.Game;
 
 public class GameBoard
 {

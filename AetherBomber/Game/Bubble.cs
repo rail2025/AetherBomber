@@ -1,7 +1,7 @@
 using System.Numerics;
 using Serilog.Filters;
 
-namespace AetherBreaker.Game;
+namespace AetherBomber.Game;
 
 /// <summary>
 /// Represents a bubble in the game with position, velocity, and visual properties.

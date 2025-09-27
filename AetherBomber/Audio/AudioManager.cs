@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using AetherBreaker.Windows;
+using AetherBomber.Windows;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-namespace AetherBreaker.Audio;
+namespace AetherBomber.Audio;
 
 public class AudioManager : IDisposable
 {
@@ -42,7 +42,7 @@ public class AudioManager : IDisposable
         if (this.configuration.IsSfxMuted) return;
 
         var assembly = Assembly.GetExecutingAssembly();
-        var resourcePath = $"AetherBreaker.Sfx.{sfxName}";
+        var resourcePath = $"AetherBomber.Sfx.{sfxName}";
 
         try
         {
@@ -87,7 +87,7 @@ public class AudioManager : IDisposable
     private void DiscoverMusicTracks()
     {
         var assembly = Assembly.GetExecutingAssembly();
-        const string resourcePrefix = "AetherBreaker.Music.";
+        const string resourcePrefix = "AetherBomber.Music.";
         this.allMusicTracks.AddRange(
             assembly.GetManifestResourceNames()
                 .Where(r => r.StartsWith(resourcePrefix) && r.EndsWith(".mp3"))
@@ -158,7 +158,7 @@ public class AudioManager : IDisposable
 
         this.currentTrackIndex = trackIndex;
         var bgmName = this.bgmPlaylist[trackIndex];
-        var resourcePath = $"AetherBreaker.Music.{bgmName}";
+        var resourcePath = $"AetherBomber.Music.{bgmName}";
 
         try
         {

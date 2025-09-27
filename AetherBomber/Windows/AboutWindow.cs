@@ -6,7 +6,7 @@ using Dalamud.Utility;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility.Raii;
 
-namespace AetherBreaker.Windows;
+namespace AetherBomber.Windows;
 
 /// <summary>
 /// A window to display information about the plugin, such as version, author, and support links.
@@ -16,7 +16,7 @@ public class AboutWindow : Window, IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="AboutWindow"/> class.
     /// </summary>
-    public AboutWindow() : base("About AetherBreaker")
+    public AboutWindow() : base("About AetherBomber")
     {
         // CHANGE: Increased window width to prevent text wrapping.
         this.Size = new Vector2(380, 250);
@@ -59,7 +59,7 @@ public class AboutWindow : Window, IDisposable
             
             if (ImGui.Button("Bug report/\nFeature request", new Vector2(btnWidthFull, bugReportButtonHeight)))
             {
-                Util.OpenLink("https://github.com/rail2025/AetherBreaker/issues");
+                Util.OpenLink("https://github.com/rail2025/AetherBomber/issues");
             }
         }
         if (ImGui.IsItemHovered())

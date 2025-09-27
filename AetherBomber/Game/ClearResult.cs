@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using AetherBreaker.Game;
+using AetherBomber.Game;
 
-namespace AetherBreaker.Game;
+namespace AetherBomber.Game;
 
 /// <summary>
 /// Represents the result of a bubble being added to the board, including any bubbles that were cleared as a consequence.

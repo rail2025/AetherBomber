@@ -3,12 +3,12 @@ using System.IO;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using AetherBreaker.Serialization;
+using AetherBomber.Serialization;
 
-namespace AetherBreaker.Networking
+namespace AetherBomber.Networking
 {
     /// <summary>
-    /// Manages the WebSocket connection for AetherBreaker multiplayer.
+    /// Manages the WebSocket connection for AetherBomber multiplayer.
     /// </summary>
     public class NetworkManager : IDisposable
     {

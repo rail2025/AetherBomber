@@ -4,11 +4,11 @@ using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Linq;
-using AetherBreaker.Audio;
-using AetherBreaker.Networking;
-using AetherBreaker.Windows;
+using AetherBomber.Audio;
+using AetherBomber.Networking;
+using AetherBomber.Windows;
 
-namespace AetherBreaker.Game
+namespace AetherBomber.Game
 {
     public class MultiplayerGameSession
     {

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace AetherBreaker;
+namespace AetherBomber;
 
 [Serializable]
 public class SavedGame

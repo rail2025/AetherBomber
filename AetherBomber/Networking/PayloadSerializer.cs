@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using AetherBreaker.Networking;
+using AetherBomber.Networking;
 
-namespace AetherBreaker.Serialization
+namespace AetherBomber.Serialization
 {
     /// <summary>
     /// Handles the binary serialization and deserialization of the NetworkPayload object.

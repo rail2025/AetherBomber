@@ -1,13 +1,13 @@
 using System;
 using System.IO;
 using System.Numerics;
-using AetherBreaker.Audio;
-using AetherBreaker.Game;
-using AetherBreaker.Windows;
+using AetherBomber.Audio;
+using AetherBomber.Game;
+using AetherBomber.Windows;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
 using Dalamud.Bindings.ImGui;
-namespace AetherBreaker.UI;
+namespace AetherBomber.UI;
 
 public static class UIManager
 {
@@ -27,7 +27,7 @@ public static class UIManager
     {
         var drawList = ImGui.GetWindowDrawList();
         var windowPos = ImGui.GetWindowPos();
-        var title = "AetherBreaker";
+        var title = "AetherBomber";
         var titleFontSize = 3.5f;
         var titleSize = ImGui.CalcTextSize(title) * titleFontSize;
         var titlePos = new Vector2(windowPos.X + (MainWindow.ScaledWindowSize.X - titleSize.X) * 0.5f, windowPos.Y + MainWindow.ScaledWindowSize.Y * 0.2f);

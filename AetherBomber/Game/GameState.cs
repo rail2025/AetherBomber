@@ -1,4 +1,4 @@
-namespace AetherBreaker.Game;
+namespace AetherBomber.Game;
 
 /// <summary>
 /// Represents the different states the game can be in.

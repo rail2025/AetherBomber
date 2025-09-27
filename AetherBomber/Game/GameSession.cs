@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using AetherBreaker.Audio;
-using AetherBreaker.Networking;
-using AetherBreaker.Windows;
+using AetherBomber.Audio;
+using AetherBomber.Networking;
+using AetherBomber.Windows;
 
-namespace AetherBreaker.Game;
+namespace AetherBomber.Game;
 
 public class GameSession
 {

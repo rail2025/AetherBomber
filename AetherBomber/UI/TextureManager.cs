@@ -8,7 +8,7 @@ using Dalamud.Interface.Textures.TextureWraps;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace AetherBreaker.UI;
+namespace AetherBomber.UI;
 
 /// <summary>
 /// Manages loading and accessing all image assets for the game.
@@ -37,7 +37,7 @@ public class TextureManager : IDisposable
         var bubbleNames = new[] { "dps", "healer", "tank", "bird", "bomb", "star", "paint", "chest", "mirror" };
         foreach (var name in bubbleNames)
         {
-            var texture = LoadTextureFromResource($"AetherBreaker.Images.{name}.png");
+            var texture = LoadTextureFromResource($"AetherBomber.Images.{name}.png");
             if (texture != null)
             {
                 this.bubbleTextures[name] = texture;
@@ -52,7 +52,7 @@ public class TextureManager : IDisposable
     private void LoadBackgroundTextures()
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var resourcePathPrefix = "AetherBreaker.Images.";
+        var resourcePathPrefix = "AetherBomber.Images.";
         var backgroundResourceNames = assembly.GetManifestResourceNames()
             .Where(r => r.StartsWith(resourcePathPrefix + "background") && r.EndsWith(".png"))
             .OrderBy(r => r)
