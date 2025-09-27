@@ -7,6 +7,7 @@ Make bombs, yeet opponents.
 
 Because waiting for res in field ops sucks.
 <br>
+<img width="745" height="626" alt="day 2" src="https://github.com/user-attachments/assets/360d6393-7f2b-4fa3-b953-dc7102f35840" />
 
 
 <br>
