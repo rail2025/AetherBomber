@@ -37,7 +37,7 @@ move, button click to place bomb.
     * In here, go to `Experimental`, and add the full path to the repo https://raw.githubusercontent.com/rail2025/AetherBomber/refs/heads/master/repo.json to the list of custom Plugin repositories.
 2. Next, use `/xlplugins` (chat) or `xlplugins` (console) to open up the Plugin Installer.
     * In here, go to and the `AetherBomber` should be visible. Enable it.
-3. You should now be able to use `/abreaker`!
+3. You should now be able to use `/aetherbomber`!
 
 
 ### Scoring
