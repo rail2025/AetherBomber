@@ -111,17 +111,7 @@ public class GameRenderer : IDisposable
 
     private void DrawBombsAndExplosions(ImDrawListPtr drawList, Vector2 gridOrigin, float cellSize, GameSession session)
     {
-        // First, handle all state changes from exploding bombs
-        foreach (var bomb in session.ActiveBombs.Where(b => b.IsExploding))
-        {
-            foreach (var tilePos in bomb.ExplosionPath)
-            {
-                session.HitCharacterAt(tilePos, bomb);
-                session.GameBoard.DestroyTile((int)tilePos.X, (int)tilePos.Y);
-            }
-        }
-
-        // Then, draw everything based on the updated state
+        // Draw all bombs and explosions based on the current state
         foreach (var bomb in session.ActiveBombs)
         {
             if (bomb.IsExploding)
@@ -252,6 +242,7 @@ public class GameRenderer : IDisposable
         for (int i = 0; i < characters.Count; i++)
         {
             var character = characters[i];
+            if (character == null) continue;
             var sectionStart = scoreboardPos.X + (i * sectionWidth);
 
             var iconCenter = new Vector2(sectionStart + padding + iconSize / 2, scoreboardPos.Y + padding + iconSize / 2);

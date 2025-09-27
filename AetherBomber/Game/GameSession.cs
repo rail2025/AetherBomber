@@ -150,11 +150,18 @@ public class GameSession
             var bomb = ActiveBombs[i];
             bomb.Update(deltaTime);
 
-            // If the bomb just started exploding this frame, calculate its path
+            // If the bomb just started exploding this frame, calculate its path and handle hits
             if (bomb.IsExploding && bomb.ExplosionPath.Count == 0)
             {
                 var path = CalculateExplosionPath(bomb);
                 bomb.SetExplosionPath(path);
+
+                // Handle hits and tile destruction
+                foreach (var tilePos in path)
+                {
+                    HitCharacterAt(tilePos, bomb);
+                    GameBoard.DestroyTile((int)tilePos.X, (int)tilePos.Y);
+                }
             }
 
             if (bomb.IsFinished())
@@ -164,7 +171,7 @@ public class GameSession
         }
     }
 
-    private HashSet<Vector2> CalculateExplosionPath(Bomb bomb)
+    public HashSet<Vector2> CalculateExplosionPath(Bomb bomb)
     {
         var path = new HashSet<Vector2>();
         path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(0, 0))); // Center
