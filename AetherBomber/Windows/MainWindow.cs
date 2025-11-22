@@ -18,6 +18,7 @@ public class MainWindow : Window, IDisposable
     private readonly Plugin plugin;
     private readonly AudioManager audioManager;
     private readonly TextureManager textureManager;
+    private readonly string idSuffix;
 
     private GameSession? gameSession;
     private GameRenderer? gameRenderer;
@@ -25,10 +26,11 @@ public class MainWindow : Window, IDisposable
     public static readonly Vector2 BaseWindowSize = new(720, 540);
     public static Vector2 ScaledWindowSize => BaseWindowSize * ImGuiHelpers.GlobalScale;
 
-    public MainWindow(Plugin plugin, AudioManager audioManager) : base("AetherBomber")
+    public MainWindow(Plugin plugin, AudioManager audioManager, string idSuffix = "") : base("AetherBomber###AetherBomberMainWindow" + idSuffix)
     {
         this.plugin = plugin;
         this.audioManager = audioManager;
+        this.idSuffix = idSuffix;
 
         this.textureManager = new TextureManager();
         this.gameRenderer = new GameRenderer(this.textureManager);
@@ -46,8 +48,16 @@ public class MainWindow : Window, IDisposable
     {
         this.audioManager.EndPlaylist();
         this.gameSession = null;
+        plugin.ToggleTitleUI(this.idSuffix);
         base.OnClose();
     }
+
+    public void StartMultiplayerGame(int localPlayerNumber, int totalPlayers)
+    {
+        gameSession = new GameSession(audioManager, localPlayerNumber, totalPlayers);
+        gameSession.StartNewGame();
+    }
+
 
     public override void PreDraw()
     {
@@ -72,5 +82,14 @@ public class MainWindow : Window, IDisposable
 
         gameSession.Update(deltaTime, Plugin.GamepadState, cellSize);
         gameRenderer?.Draw(gameSession);
+    }
+    public override void OnOpen()
+    {
+        base.OnOpen();
+        if (gameSession == null)
+        {
+            gameSession = new GameSession(audioManager);
+            gameSession.StartNewGame();
+        }
     }
 }

@@ -21,7 +21,7 @@ public static class UIManager
         drawList.AddText(ImGui.GetFont(), fontSize, pos, color, text);
     }
 
-    public static void DrawMainMenu(Plugin plugin, Action startGame, Action openSettings, Action openAbout)
+    public static void DrawMainMenu(Plugin plugin, Action startGame, Action openMultiplayer, Action openSettings, Action openAbout)
     {
         var drawList = ImGui.GetWindowDrawList();
         var windowPos = ImGui.GetWindowPos();
@@ -56,10 +56,10 @@ public static class UIManager
         DrawButtonWithOutline("Start Game", "Start", new Vector2(buttonX, currentY), buttonSize, startGame);
         currentY += buttonSpacing;
 
-        DrawButtonWithOutline("Multiplayer", "Multiplayer", new Vector2(buttonX, currentY), buttonSize, plugin.ToggleMultiplayerUI);
+        DrawButtonWithOutline("Multiplayer", "Multiplayer", new Vector2(buttonX, currentY), buttonSize, openMultiplayer);
         currentY += buttonSpacing;
 
-        DrawButtonWithOutline("Settings", "Settings", new Vector2(buttonX, currentY), buttonSize, plugin.ToggleConfigUI);
+        DrawButtonWithOutline("Settings", "Settings", new Vector2(buttonX, currentY), buttonSize, openSettings);
         currentY += buttonSpacing;
 
         DrawButtonWithOutline("About", "About", new Vector2(buttonX, currentY), buttonSize, openAbout);

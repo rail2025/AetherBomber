@@ -22,6 +22,7 @@ namespace AetherBomber.Networking
         public event Action<int>? OnAttackReceived; // Carries junk row count
         public event Action<byte[]>? OnGameStateUpdateReceived; // Carries opponent board state
         public event Action<PayloadActionType>? OnMatchControlReceived; // Carries ready, rematch, etc.
+        public event Action? OnStartGameReceived;
 
         public bool IsConnected => webSocket?.State == WebSocketState.Open;
 
@@ -35,10 +36,13 @@ namespace AetherBomber.Networking
                 cancellationTokenSource = new CancellationTokenSource();
                 Uri connectUri = new Uri($"{serverUri}?passphrase={Uri.EscapeDataString(passphrase)}&client=ab");
 
+                Plugin.Log.Debug($"[NetworkManager] Attempting to connect to {connectUri} with passphrase '{passphrase}'");
                 await webSocket.ConnectAsync(connectUri, cancellationTokenSource.Token);
+                Plugin.Log.Debug("[NetworkManager] Connection successful.");
 
                 // When the connection is successful, we now send the passphrase along with the signal.
                 OnConnected?.Invoke(passphrase);
+                Plugin.Log.Debug("[NetworkManager] OnConnected event invoked.");
                 _ = Task.Run(() => StartListening(cancellationTokenSource.Token));
             }
             catch (Exception ex)
@@ -130,7 +134,10 @@ namespace AetherBomber.Networking
                     break;
 
                 case MessageType.MATCH_CONTROL:
-                    OnMatchControlReceived?.Invoke(payload.Action);
+                    if (payload.Action == PayloadActionType.StartGame)
+                        OnStartGameReceived?.Invoke();
+                    else
+                        OnMatchControlReceived?.Invoke(payload.Action);
                     break;
             }
         }

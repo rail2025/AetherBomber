@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
+using AetherBomber.Game;
 using AetherBomber.Networking;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
@@ -14,14 +15,16 @@ namespace AetherBomber.Windows
     public class MultiplayerWindow : Window, IDisposable
     {
         private readonly Plugin plugin;
+        public NetworkManager NetworkManager { get; }
 
-        private enum SessionState { Choice, PassphraseEntry, Loading }
+        private enum SessionState { Choice, PassphraseEntry, Loading, Lobby }
         private SessionState currentState = SessionState.Choice;
 
         private string serverAddress = "wss://aetherdraw-server.onrender.com/ws"; // Placeholder Server
         private string inputPassphrase = "";
         private string generatedPassphrase = "";
         private string statusMessage = "Disconnected";
+        private bool isConnecting = false;
 
         // Passphrase generation words
         private static readonly Random Random = new();
@@ -31,31 +34,63 @@ namespace AetherBomber.Windows
         private static readonly string[] FoodItems = { "rolanberry pie", "LaNoscean toast", "dodo omelette", "pixieberry tea", "king salmon", "knightly bread", "stone soup", "archon burgers", "bubble chocolate", "tuna miq", "syrcus tower", "dalamud shard", "aetheryte shard", "allagan tomestone", "company seal", "gil-turtle", "cactuar needle", "malboro breath", "behemoth horn", "mandragora root", "black truffle", "popoto", "ruby tomato", "apkallu egg", "thavnairian onion" };
         private static readonly string[] ActionPhrases = { "in my inventory", "on the marketboard", "from a retainer", "for the Grand Company", "in a treasure chest", "from a guildhest", "at the Gold Saucer", "near the aetheryte", "without permission", "for a friend", "under the table", "with great haste", "against all odds", "for my free company", "in the goblet" };
 
-        public MultiplayerWindow(Plugin plugin) : base("AetherBomber Multiplayer", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse)
+        public MultiplayerWindow(Plugin plugin, string idSuffix = "") : base("AetherBomber Multiplayer###AetherBomberMultiplayerWindow" + idSuffix, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse)
         {
             this.plugin = plugin;
+            this.NetworkManager = new NetworkManager();
+
+            this.NetworkManager.OnConnected += OnConnected;
+            this.NetworkManager.OnDisconnected += OnDisconnected;
+            this.NetworkManager.OnError += OnError;
+            this.NetworkManager.OnStartGameReceived += OnStartGameReceived;
         }
 
         public void Dispose()
         {
+            this.NetworkManager.OnConnected -= OnConnected;
+            this.NetworkManager.OnDisconnected -= OnDisconnected;
+            this.NetworkManager.OnError -= OnError;
+            this.NetworkManager.OnStartGameReceived -= OnStartGameReceived;
+            this.NetworkManager.Dispose();
         }
 
         public override void OnOpen()
         {
             this.currentState = SessionState.Choice;
-            this.statusMessage = plugin.NetworkManager.IsConnected ? "Connected" : "Disconnected";
+            this.statusMessage = NetworkManager.IsConnected ? "Connected" : "Disconnected";
             this.inputPassphrase = "";
             this.generatedPassphrase = "";
         }
 
+        // Network Event Handlers
+        private void OnConnected(string passphrase)
+        {
+            Plugin.Log.Debug($"[MultiplayerWindow {this.WindowName}] OnConnected event received. Enqueuing action.");
+            plugin.MainThreadActions.Enqueue(() => plugin.OnClientConnected(passphrase, this));
+        }
+        private void OnDisconnected() => plugin.MainThreadActions.Enqueue(() => plugin.OnClientDisconnected(this));
+        private void OnError(string message) => plugin.MainThreadActions.Enqueue(() => SetConnectionStatus(message, true));
+        private void OnStartGameReceived() => plugin.MainThreadActions.Enqueue(plugin.StartMultiplayerGame);
+
+
         public void SetConnectionStatus(string status, bool isError)
         {
             this.statusMessage = status;
+            isConnecting = false;
             if (isError)
             {
-                this.currentState = SessionState.Choice; // Go back to choice on error
+                this.currentState = SessionState.Choice;
             }
-            // This window no longer closes itself. The Plugin file will close it.
+            else if (plugin.MultiplayerSession != null)
+            {
+                this.currentState = SessionState.Lobby;
+            }
+        }
+
+        public void UpdateLobby()
+        {
+            // This can be called from Plugin to force a redraw/state update of the lobby
+            // For now, it's implicitly handled by DrawLobbyView checking plugin.MultiplayerSession
         }
 
         public override void Draw()
@@ -68,6 +103,7 @@ namespace AetherBomber.Windows
                 case SessionState.Choice: DrawChoiceView(); break;
                 case SessionState.PassphraseEntry: DrawPassphraseEntryView(); break;
                 case SessionState.Loading: DrawLoadingView(); break;
+                case SessionState.Lobby: DrawLobbyView(); break;
             }
         }
 
@@ -77,7 +113,43 @@ namespace AetherBomber.Windows
             ImGui.Spacing();
             if (ImGui.Button("Cancel"))
             {
-                _ = plugin.NetworkManager.DisconnectAsync();
+                _ = NetworkManager.DisconnectAsync();
+                currentState = SessionState.Choice;
+            }
+        }
+
+        private void DrawLobbyView()
+        {
+            if (plugin.MultiplayerSession == null)
+            {
+                ImGui.Text("Error: Not in a session.");
+                if (ImGui.Button("Back to Menu"))
+                {
+                    currentState = SessionState.Choice;
+                }
+                return;
+            }
+            Plugin.Log.Debug($"[MultiplayerWindow {this.WindowName}] Drawing lobby. Found {plugin.MultiplayerSession.Players.Count} player(s).");
+
+            ImGui.Text($"Lobby: {plugin.MultiplayerSession.Passphrase}");
+            ImGui.Separator();
+
+            ImGui.Text("Players:");
+            foreach (var player in plugin.MultiplayerSession.Players)
+            {
+                ImGui.Text(player);
+            }
+
+            ImGui.Separator();
+
+            if (ImGui.Button("Start Game", new Vector2(120, 0)))
+            {
+                _ = NetworkManager.SendMatchControl(PayloadActionType.StartGame);
+            }
+            ImGui.SameLine();
+            if (ImGui.Button("Leave", new Vector2(120, 0)))
+            {
+                _ = NetworkManager.DisconnectAsync();
                 currentState = SessionState.Choice;
             }
         }
@@ -100,7 +172,7 @@ namespace AetherBomber.Windows
                 ImGui.Spacing();
 
                 bool inParty = Plugin.PartyList != null && Plugin.PartyList.Length > 0;
-                using (ImRaii.Disabled(!inParty))
+                using (ImRaii.Disabled(!inParty || isConnecting))
                 {
                     if (ImGui.Button("Quick Sync##QuickSyncButton", new Vector2(paneWidth, 0)))
                     {
@@ -112,8 +184,9 @@ namespace AetherBomber.Windows
                         else
                         {
                             statusMessage = "Connecting via Party ID...";
+                            isConnecting = true;
                             currentState = SessionState.Loading;
-                            _ = plugin.NetworkManager.ConnectAsync(serverAddress, partyPassphrase);
+                            _ = NetworkManager.ConnectAsync(serverAddress, partyPassphrase);
                         }
                     }
                 }
@@ -178,13 +251,14 @@ namespace AetherBomber.Windows
             ImGui.Separator();
 
             bool canConnect = !string.IsNullOrWhiteSpace(serverAddress) && !string.IsNullOrWhiteSpace(inputPassphrase);
-            using (ImRaii.Disabled(!canConnect))
+            using (ImRaii.Disabled(!canConnect || isConnecting))
             {
                 if (ImGui.Button("Connect"))
                 {
                     statusMessage = $"Connecting with passphrase...";
+                    isConnecting = true;
                     currentState = SessionState.Loading;
-                    _ = plugin.NetworkManager.ConnectAsync(serverAddress, inputPassphrase);
+                    _ = NetworkManager.ConnectAsync(serverAddress, inputPassphrase);
                 }
             }
             ImGui.SameLine();

@@ -1,4 +1,4 @@
-// AetherBomber/Game/Bomb.cs
+using System; // Needed for Math.Ceiling
 using Dalamud.Bindings.ImGui;
 using System.Collections.Generic;
 using System.Numerics;
@@ -13,6 +13,11 @@ public class Bomb
     public float ExplosionTimer { get; private set; }
     public bool IsExploding { get; private set; }
     public HashSet<Vector2> ExplosionPath { get; private set; } = new();
+
+    // --- THE MISSING BRIDGE ---
+    // AI calculates logic in 0.25s "Ticks". This converts float time to int ticks.
+    public int FuseRemainingTicks => (int)Math.Ceiling(this.Timer / 0.25f);
+    // --------------------------
 
     private const float DetonationTime = 4.0f;
     private const float ExplosionDuration = 0.5f;
@@ -43,13 +48,12 @@ public class Bomb
     }
 
     public bool IsFinished() => this.IsExploding && this.ExplosionTimer <= 0;
+
     public void SetExplosionPath(HashSet<Vector2> path)
     {
-        if (ExplosionPath.Count == 0)
-        {
-            ExplosionPath = path;
-        }
+        if (ExplosionPath.Count == 0) ExplosionPath = path;
     }
+
     public uint GetOutlineColor()
     {
         if (this.Timer <= 1.0f)
@@ -63,4 +67,3 @@ public class Bomb
             : ImGui.GetColorU32(new Vector4(0.0f, 0.0f, 0.0f, 0.0f));
     }
 }
-

@@ -214,7 +214,7 @@ public class GameRenderer : IDisposable
 
             drawList.AddCircleFilled(center, radius, characterOutlineColor);
 
-            if (texture != null)
+            if (texture != null && texture.Handle != IntPtr.Zero)
             {
                 drawList.AddImageRounded(texture.Handle,
                                   center - new Vector2(radius),
@@ -257,7 +257,7 @@ public class GameRenderer : IDisposable
                 _ => null
             };
 
-            if (texture != null)
+            if (texture != null && texture.Handle != IntPtr.Zero)
             {
                 drawList.AddCircleFilled(iconCenter, iconRadius, characterOutlineColor);
                 drawList.AddImageRounded(texture.Handle,

@@ -2,7 +2,6 @@
 using AetherBomber.Audio;
 using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Plugin.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -26,21 +25,28 @@ public class GameSession
     public float StartCountdownTimer { get; private set; }
 
     private readonly AudioManager audioManager;
+    private readonly bool isMultiplayer;
+    private readonly int localPlayerIndex = -1;
+
     private float moveCooldown = 0f;
     private const float MoveDelay = 0.15f;
     private bool bombButtonPressedLastFrame = false;
 
+    // Single Player Constructor
     public GameSession(AudioManager audioManager)
     {
         this.audioManager = audioManager;
+        this.isMultiplayer = false;
         GameBoard = new GameBoard();
 
-        Characters.Add(new Character(CharacterType.Player, Vector2.Zero));
+        var player = new Character(CharacterType.Player, Vector2.Zero) { IsLocalPlayer = true };
+        Characters.Add(player);
+        this.localPlayerIndex = 0;
+
         var dps = new Character(CharacterType.DPS, Vector2.Zero);
         var healer = new Character(CharacterType.Healer, Vector2.Zero);
         var tank = new Character(CharacterType.Tank, Vector2.Zero);
 
-        // Assign AI controllers to non-player characters
         dps.AiController = new AIController(dps, this);
         healer.AiController = new AIController(healer, this);
         tank.AiController = new AIController(tank, this);
@@ -48,7 +54,37 @@ public class GameSession
         Characters.Add(dps);
         Characters.Add(healer);
         Characters.Add(tank);
+
+        
     }
+
+    // Multiplayer Constructor
+    public GameSession(AudioManager audioManager, int localPlayerNumber, int totalPlayers)
+    {
+        this.audioManager = audioManager;
+        this.isMultiplayer = true;
+        GameBoard = new GameBoard();
+
+        var remoteTypes = new List<CharacterType> { CharacterType.DPS, CharacterType.Healer, CharacterType.Tank };
+        int remoteTypeIndex = 0;
+
+        for (int i = 0; i < totalPlayers; i++)
+        {
+            Character character;
+            if (i == localPlayerNumber - 1)
+            {
+                character = new Character(CharacterType.Player, Vector2.Zero) { IsLocalPlayer = true };
+                this.localPlayerIndex = i;
+            }
+            else
+            {
+                character = new Character(remoteTypes[remoteTypeIndex % remoteTypes.Count], Vector2.Zero);
+                remoteTypeIndex++;
+            }
+            Characters.Add(character);
+        }
+    }
+
 
     public void StartNewGame()
     {
@@ -65,10 +101,18 @@ public class GameSession
 
     private void StartRound()
     {
-        Characters[0].Reset(new Vector2(1, 1)); // Player
-        Characters[1].Reset(new Vector2(GameBoard.GridWidth - 2, 1)); // DPS
-        Characters[2].Reset(new Vector2(GameBoard.GridWidth - 2, GameBoard.GridHeight - 2)); // Healer
-        Characters[3].Reset(new Vector2(1, GameBoard.GridHeight - 2)); // Tank
+        var startPositions = new List<Vector2>
+        {
+            new(1, 1), // NW
+            new(GameBoard.GridWidth - 2, 1), // NE
+            new(GameBoard.GridWidth - 2, GameBoard.GridHeight - 2), // SE
+            new(1, GameBoard.GridHeight - 2) // SW
+        };
+
+        for (int i = 0; i < Characters.Count; i++)
+        {
+            Characters[i].Reset(startPositions[i % startPositions.Count]);
+        }
 
         ActiveBombs.Clear();
         StageTimer = 120.0f;
@@ -91,9 +135,16 @@ public class GameSession
             HandleInput(gamepadState);
             StageTimer -= deltaTime;
 
-            foreach (var character in Characters)
+            if (!isMultiplayer)
             {
-                character.AiController?.Update(deltaTime);
+                foreach (var character in Characters)
+                {
+                    // 1. Brain Update
+                    character.AiController?.Update();
+
+                    // 2. Body Update (NEW)
+                    character.ExecuteAIIntent(deltaTime, this);
+                }
             }
 
             var activeCharacters = Characters.Count(c => c.IsActive);
@@ -150,13 +201,11 @@ public class GameSession
             var bomb = ActiveBombs[i];
             bomb.Update(deltaTime);
 
-            // If the bomb just started exploding this frame, calculate its path and handle hits
             if (bomb.IsExploding && bomb.ExplosionPath.Count == 0)
             {
                 var path = CalculateExplosionPath(bomb);
                 bomb.SetExplosionPath(path);
 
-                // Handle hits and tile destruction
                 foreach (var tilePos in path)
                 {
                     HitCharacterAt(tilePos, bomb);
@@ -174,11 +223,11 @@ public class GameSession
     public HashSet<Vector2> CalculateExplosionPath(Bomb bomb)
     {
         var path = new HashSet<Vector2>();
-        path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(0, 0))); // Center
-        path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(1, 0)));  // Right
-        path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(-1, 0))); // Left
-        path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(0, 1)));   // Down
-        path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(0, -1)));  // Up
+        path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(0, 0)));
+        path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(1, 0)));
+        path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(-1, 0)));
+        path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(0, 1)));
+        path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(0, -1)));
         return path;
     }
 
@@ -205,8 +254,9 @@ public class GameSession
     {
         if (gamepadState == null || CurrentRoundState != RoundState.InProgress) return;
 
-        var player = Characters.FirstOrDefault(c => c.Type == CharacterType.Player);
-        if (player == null || !player.IsActive) return;
+        if (localPlayerIndex < 0 || localPlayerIndex >= Characters.Count) return;
+        var player = Characters[localPlayerIndex];
+        if (!player.IsActive) return;
 
         if (this.moveCooldown > 0) this.moveCooldown -= Dalamud.Bindings.ImGui.ImGui.GetIO().DeltaTime;
         if (this.moveCooldown <= 0)

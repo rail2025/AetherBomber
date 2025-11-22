@@ -21,6 +21,9 @@ namespace AetherBomber.Networking
         Ready,
         Rematch,
         Disconnect,
+        StartGame,
+        PlayerMove,
+        PlaceBomb,
     }
 
     /// <summary>

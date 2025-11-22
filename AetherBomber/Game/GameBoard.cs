@@ -22,6 +22,9 @@ public class GameBoard
     public const int GridWidth = 15;
     public const int GridHeight = 11;
 
+    public int Width => GridWidth;
+    public int Height => GridHeight;
+
     private readonly Tile[,] grid;
     private readonly Random random = new();
 
