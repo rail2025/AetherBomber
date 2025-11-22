@@ -13,14 +13,14 @@ public class EscapeSimulator
         path = p;
     }
 
-    public bool CanEscape(GridPos bombAt, GridPos start)
+    public List<GridPos>? CanEscape(GridPos bombAt, GridPos start)
     {
-        // Simulate temp bomb
-        var fake = new Bomb(bombAt.ToVector2(), owner: null);
+        // Simulate temp bomb (using player 0 as dummy owner)
+        var fake = new Bomb(bombAt.ToVector2(), session.Characters[0]);
         session.ActiveBombs.Add(fake);
 
         var threats = new AIThreatMap(session);
-        bool canEscape = false;
+        List<GridPos>? safePath = null;
 
         // Search every walkable tile for a safe spot
         for (int x = 0; x < session.GameBoard.Width; x++)
@@ -31,8 +31,8 @@ public class EscapeSimulator
                 // Must use ToVector2() for the session check
                 if (!session.IsTileWalkable(pos.ToVector2())) continue;
 
-                // If this tile itself explodes instantly, it's not a safe haven
-                if (threats.GetDangerTime(pos) == 0) continue;
+                // Only consider tiles that are completely safe from all bombs
+                if (threats.GetDangerTime(pos) != AIThreatMap.Safe) continue;
 
                 // Attempt path
                 var p = path.FindPath(start, pos, threats);
@@ -43,14 +43,14 @@ public class EscapeSimulator
                 // Safe arrival?
                 if (!threats.IsDangerAt(pos, arrival))
                 {
-                    canEscape = true;
+                    safePath = p;
                     break;
                 }
             }
-            if (canEscape) break;
+            if (safePath != null) break;
         }
 
         session.ActiveBombs.Remove(fake);
-        return canEscape;
+        return safePath;
     }
 }

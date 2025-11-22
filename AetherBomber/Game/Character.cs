@@ -1,4 +1,4 @@
-using System; // For MathF
+using System;
 using System.Numerics;
 using System.Linq;
 namespace AetherBomber.Game;
@@ -10,9 +10,8 @@ public class Character
     public CharacterType Type { get; }
     public Vector2 GridPos { get; set; }
 
-    // --- NEW: Bridge to Integer Grid ---
+    // --- Bridge to Integer Grid ---
     public GridPos GridPosition => new GridPos((int)MathF.Round(GridPos.X), (int)MathF.Round(GridPos.Y));
-    // ----------------------------------
 
     public Vector2 PixelPos { get; private set; }
     public bool IsActive { get; set; } = true;
@@ -20,19 +19,22 @@ public class Character
     public bool IsBeingYeeted { get; private set; } = false;
     public int Score { get; set; } = 0;
 
-    // --- NEW: Updated to use the new Smart Brain ---
     public AIController? AiController { get; set; }
 
-    // --- NEW: AI Intent Queues ---
-    private GridPos? nextMoveTarget;
+    // --- AI Intent Queues ---
+    private readonly System.Collections.Generic.Queue<GridPos> moveQueue = new();
     private bool bombQueued = false;
 
-    public void QueueMove(GridPos target) { this.nextMoveTarget = target; }
+    public bool HasQueuedActions => moveQueue.Count > 0 || bombQueued;
+
+    public void QueueMove(GridPos target) { this.moveQueue.Enqueue(target); }
     public void QueueBombPlacement() { this.bombQueued = true; }
+
+    public void ClearQueue() { this.moveQueue.Clear(); this.bombQueued = false; }
     // ----------------------------
 
     // Animation State
-    private Vector2 yeetVelocity;
+    private Vector2 yeetVelocity = Vector2.Zero;
     private float yeetScale = 1.0f;
     private float yeetTimer = 0.0f;
     private const float YeetDuration = 0.75f;
@@ -45,23 +47,24 @@ public class Character
         GridPos = startPosition;
     }
 
-    // --- NEW: Method to execute the AI's orders ---
+    // --- Method to execute the AI's orders ---
     public void ExecuteAIIntent(float deltaTime, GameSession session)
     {
         // 1. Execute Move
-        if (nextMoveTarget.HasValue)
+        if (moveQueue.Count > 0)
         {
-            Vector2 targetVec = nextMoveTarget.Value.ToVector2();
+            // Peek at the next target; only dequeue when reached
+            GridPos currentTarget = moveQueue.Peek();
+            Vector2 targetVec = currentTarget.ToVector2();
             Vector2 dir = Vector2.Normalize(targetVec - this.GridPos);
 
-            // Speed = 4.0f (1 tile = 0.25s)
             Vector2 newPos = this.GridPos + (dir * deltaTime * 4.0f);
 
             // Snap to grid if close enough
             if (Vector2.Distance(this.GridPos, targetVec) < 0.1f)
             {
                 this.GridPos = targetVec;
-                nextMoveTarget = null; // Movement complete
+                moveQueue.Dequeue(); // Movement complete, remove from queue
             }
             else if (session.IsTileWalkable(newPos))
             {
@@ -72,9 +75,11 @@ public class Character
         // 2. Execute Bomb
         if (bombQueued)
         {
-            if (!session.ActiveBombs.Any(b => b.GridPos == this.GridPos))
+            // Snap bomb position to integer grid to prevent blocking intersections
+            var snapPos = this.GridPosition.ToVector2();
+            if (!session.ActiveBombs.Any(b => b.GridPos == snapPos))
             {
-                session.ActiveBombs.Add(new Bomb(this.GridPos, this));
+                session.ActiveBombs.Add(new Bomb(snapPos, this));
             }
             bombQueued = false;
         }
@@ -89,8 +94,7 @@ public class Character
         yeetScale = 1.0f;
         yeetTimer = 0.0f;
         // Clear AI memory
-        nextMoveTarget = null;
-        bombQueued = false;
+        ClearQueue();
     }
 
     public void TriggerYeet(Vector2 explosionOrigin)
@@ -98,9 +102,11 @@ public class Character
         if (IsBeingYeeted || !IsActive) return;
         IsBeingYeeted = true;
         yeetTimer = YeetDuration;
-        var direction = Vector2.Normalize(GridPos - explosionOrigin);
-        if (direction == Vector2.Zero) direction = new Vector2(1, 0);
-        yeetVelocity = direction * YeetSpeed;
+        
+        var offset = GridPos - explosionOrigin;
+        if (offset == Vector2.Zero) offset = new Vector2(1, 0);
+
+        var direction = Vector2.Normalize(offset);
     }
 
     public void UpdateAnimation(float deltaTime, float cellSize)

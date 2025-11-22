@@ -22,9 +22,7 @@ public readonly record struct GridPos(int X, int Y)
         }
     }
 
-    // --- THE MISSING BRIDGE ---
     public Vector2 ToVector2() => new Vector2(X, Y);
-    // --------------------------
 
     public static GridPos operator +(GridPos a, GridPos b)
         => new(a.X + b.X, a.Y + b.Y);

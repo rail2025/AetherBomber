@@ -142,7 +142,7 @@ public class GameSession
                     // 1. Brain Update
                     character.AiController?.Update();
 
-                    // 2. Body Update (NEW)
+                    // 2. Body Update
                     character.ExecuteAIIntent(deltaTime, this);
                 }
             }
@@ -172,7 +172,8 @@ public class GameSession
 
     public void HitCharacterAt(Vector2 gridPos, Bomb sourceBomb)
     {
-        var character = Characters.FirstOrDefault(c => c.IsActive && c.GridPos == gridPos);
+        var targetTile = new GridPos((int)gridPos.X, (int)gridPos.Y);
+        var character = Characters.FirstOrDefault(c => c.IsActive && c.GridPosition == targetTile);
         if (character != null)
         {
             character.TriggerYeet(sourceBomb.GridPos);

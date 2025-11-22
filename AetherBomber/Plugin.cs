@@ -83,6 +83,7 @@ public sealed class Plugin : IDalamudPlugin
 
         PluginInterface.UiBuilder.Draw += DrawUI;
         PluginInterface.UiBuilder.OpenConfigUi += ToggleConfigUI;
+        PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
     }
 
     public void Dispose()
@@ -92,6 +93,7 @@ public sealed class Plugin : IDalamudPlugin
 
         PluginInterface.UiBuilder.Draw -= DrawUI;
         PluginInterface.UiBuilder.OpenConfigUi -= ToggleConfigUI;
+        PluginInterface.UiBuilder.OpenMainUi += ToggleMainUI;
 
         CommandManager.RemoveHandler(CommandName);
         CommandManager.RemoveHandler(SecondCommandName);
@@ -147,6 +149,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public void ToggleConfigUI() => ConfigWindow.Toggle();
     public void ToggleAboutUI() => AboutWindow.Toggle();
+    public void ToggleMainUI() => TitleWindow.Toggle();
 
     public void StartMultiplayerGame()
     {

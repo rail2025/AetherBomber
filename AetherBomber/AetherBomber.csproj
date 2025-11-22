@@ -18,7 +18,6 @@
     <EmbeddedResource Include="Music\bgm2.mp3" />
     <EmbeddedResource Include="Music\bgm5Hotw.mp3" />
     <EmbeddedResource Include="Music\bgm4GQ.mp3" />
-    <EmbeddedResource Include="Images\icon.png" />
     <EmbeddedResource Include="Images\bomb.png" />
     <EmbeddedResource Include="Images\bird.png" />
     <EmbeddedResource Include="Images\dps.png" />
@@ -28,6 +27,7 @@
     <EmbeddedResource Include="Images\mirror.png" />
     <EmbeddedResource Include="Images\paint.png" />
     <EmbeddedResource Include="Images\star.png" />
+    <EmbeddedResource Include="Images\icon.png" />
     <Content Include="Music\bgm3.mp3" />
     <EmbeddedResource Include="Sfx\chest.wav" />
     <EmbeddedResource Include="Music\bgm6MR.mp3" />

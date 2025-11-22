@@ -14,11 +14,9 @@ public class Bomb
     public bool IsExploding { get; private set; }
     public HashSet<Vector2> ExplosionPath { get; private set; } = new();
 
-    // --- THE MISSING BRIDGE ---
     // AI calculates logic in 0.25s "Ticks". This converts float time to int ticks.
     public int FuseRemainingTicks => (int)Math.Ceiling(this.Timer / 0.25f);
-    // --------------------------
-
+    
     private const float DetonationTime = 4.0f;
     private const float ExplosionDuration = 0.5f;
 
