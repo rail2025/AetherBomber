@@ -14,10 +14,6 @@ public class GameRenderer : IDisposable
 {
     private readonly TextureManager textureManager;
 
-    private readonly uint blockColor = ImGui.GetColorU32(new Vector4(0.3f, 0.3f, 0.35f, 1.0f));
-    private readonly uint explosionColor = ImGui.GetColorU32(new Vector4(1.0f, 0.2f, 0.1f, 1.0f));
-    private readonly uint characterOutlineColor = ImGui.GetColorU32(new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-
     public GameRenderer(TextureManager textureManager)
     {
         this.textureManager = textureManager;
@@ -86,6 +82,9 @@ public class GameRenderer : IDisposable
         var chestTexture = textureManager.GetTexture("chest");
         var mirrorTexture = textureManager.GetTexture("mirror");
 
+        // Define block color here to ensure ImGui context is active
+        uint blockColor = ImGui.GetColorU32(new Vector4(0.3f, 0.3f, 0.35f, 1.0f));
+
         for (int y = 0; y < GameBoard.GridHeight; y++)
         {
             for (int x = 0; x < GameBoard.GridWidth; x++)
@@ -95,7 +94,7 @@ public class GameRenderer : IDisposable
 
                 if (tile.Type == TileType.Wall)
                 {
-                    drawList.AddRectFilled(cellPos, cellPos + new Vector2(cellSize, cellSize), this.blockColor);
+                    drawList.AddRectFilled(cellPos, cellPos + new Vector2(cellSize, cellSize), blockColor);
                 }
                 else if (tile.Type == TileType.Destructible)
                 {
@@ -111,6 +110,9 @@ public class GameRenderer : IDisposable
 
     private void DrawBombsAndExplosions(ImDrawListPtr drawList, Vector2 gridOrigin, float cellSize, GameSession session)
     {
+        // Define explosion color here
+        uint explosionColor = ImGui.GetColorU32(new Vector4(1.0f, 0.2f, 0.1f, 1.0f));
+
         // Draw all bombs and explosions based on the current state
         foreach (var bomb in session.ActiveBombs)
         {
@@ -122,7 +124,7 @@ public class GameRenderer : IDisposable
                 foreach (var tilePos in bomb.ExplosionPath)
                 {
                     var cellCenter = gridOrigin + new Vector2(tilePos.X * cellSize, tilePos.Y * cellSize) + new Vector2(cellSize / 2);
-                    drawList.AddCircleFilled(cellCenter, explosionRadius, this.explosionColor);
+                    drawList.AddCircleFilled(cellCenter, explosionRadius, explosionColor);
                 }
             }
             else
@@ -187,6 +189,8 @@ public class GameRenderer : IDisposable
     {
         var windowPos = ImGui.GetWindowPos();
         var windowSize = ImGui.GetWindowSize();
+        // Define character outline color here
+        uint characterOutlineColor = ImGui.GetColorU32(new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
         foreach (var character in characters)
         {
@@ -232,6 +236,7 @@ public class GameRenderer : IDisposable
         float scoreboardHeight = 50 * ImGuiHelpers.GlobalScale;
         Vector2 scoreboardPos = new Vector2(contentMin.X, contentMin.Y + contentSize.Y - scoreboardHeight);
         Vector2 scoreboardSize = new Vector2(contentSize.X, scoreboardHeight);
+        uint characterOutlineColor = ImGui.GetColorU32(new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
         drawList.AddRectFilled(scoreboardPos, scoreboardPos + scoreboardSize, 0x80000000);
 
