@@ -19,7 +19,7 @@ Because waiting for res in field ops sucks.
 
 ## Installation
 
-[https://raw.githubusercontent.com/rail2025/AetherBomber/refs/heads/master/repo.json](https://raw.githubusercontent.com/rail2025/AetherBreaker/refs/heads/master/AetherBomber/repo.json)
+[https://raw.githubusercontent.com/rail2025/AetherBomber/refs/heads/master/repo.json](https://raw.githubusercontent.com/rail2025/AetherBomber/refs/heads/master/repo.json)
 ## How To Use
 /aetherbomber, d-pad to move, button to place bomb. slider to music volume, or mute. settings to turn off sfx. closing window ends game and progress. do people want a continue option?
 ### Die

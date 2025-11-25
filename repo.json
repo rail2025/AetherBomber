@@ -1,29 +1,30 @@
 [
     {
         "Author": "rail",
-        "Name": "AetherBreaker",
+        "Name": "AetherBomber",
         "Punchline": "A game to play when dead.",
-        "Description": "Opens on death, or /abreaker. A Puzzle Bobble clone mini-game.",
-        "Changelog": "v2.1.0.0: Music chest unlock added, multiplayer server fix, redesign aiming line.",
+        "Description": "Opens on death, or /aetherbomber. A Bomberman clone mini-game.",
+        "Changelog": "v0.0.0.1:initial prototype.",
         "IsHide": false,
-        "InternalName": "AetherBreaker",
-        "AssemblyVersion": "2.1.0.0",
-        "TestingAssemblyVersion": "2.1.0.0",
+        "InternalName": "AetherBomber",
+        "AssemblyVersion": "0.0.0.1",
+        "TestingAssemblyVersion": "0.0.0.1",
         "IsTestingExclusive": false,
-        "RepoUrl": "https://github.com/rail2025/AetherBreaker",
+        "RepoUrl": "https://github.com/rail2025/AetherBomber",
         "ApplicableVersion": "any",
         "Tags": [
             "game",
             "death",
-            "pop"
+            "idle",
+            "bomb"
         ],
-        "DalamudApiLevel": 12,
-        "TestingDalamudApiLevel": 12,
-        "DownloadLinkInstall": "https://github.com/rail2025/AetherBreaker/releases/download/v2.1.0.0/latest.zip",
-        "DownloadLinkUpdate": "https://github.com/rail2025/AetherBreaker/releases/download/v2.1.0.0/latest.zip",
-        "DownloadLinkTesting": "https://github.com/rail2025/AetherBreaker/releases/download/v2.1.0.0/latest.zip",
+        "DalamudApiLevel": 13,
+        "TestingDalamudApiLevel": 13,
+        "DownloadLinkInstall": "https://github.com/rail2025/AetherBomber/releases/download/v0.0.0.1/latest.zip",
+        "DownloadLinkUpdate": "https://github.com/rail2025/AetherBomber/releases/download/v0.0.0.1/latest.zip",
+        "DownloadLinkTesting": "https://github.com/rail2025/AetherBomber/releases/download/v0.0.0.1/latest.zip",
         "LoadPriority": 0,
         "SupportsProfiles": true,
-        "IconUrl": "https://raw.githubusercontent.com/rail2025/AetherBreaker/refs/heads/master/icon.png"
+        "IconUrl": "https://raw.githubusercontent.com/rail2025/AetherBomber/refs/heads/master/icon.png"
     }
 ]
