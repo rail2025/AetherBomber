@@ -15,16 +15,14 @@ public class Bomb
     public HashSet<Vector2> ExplosionPath { get; private set; } = new();
 
     // AI calculates logic in 0.25s "Ticks". This converts float time to int ticks.
-    public int FuseRemainingTicks => (int)Math.Ceiling(this.Timer / 0.25f);
-    
-    private const float DetonationTime = 4.0f;
-    private const float ExplosionDuration = 0.5f;
+    // Use GameRules.TickRate instead of hardcoded 0.25f
+    public int FuseRemainingTicks => (int)Math.Ceiling(this.Timer / GameRules.TickRate);
 
     public Bomb(Vector2 gridPos, Character owner)
     {
         this.GridPos = gridPos;
         this.Owner = owner;
-        this.Timer = DetonationTime;
+        this.Timer = GameRules.BombFuseTime;
         this.IsExploding = false;
     }
 
@@ -40,7 +38,7 @@ public class Bomb
             if (this.Timer <= 0)
             {
                 this.IsExploding = true;
-                this.ExplosionTimer = ExplosionDuration;
+                this.ExplosionTimer = GameRules.ExplosionDuration;
             }
         }
     }

@@ -58,7 +58,8 @@ public class Character
             Vector2 targetVec = currentTarget.ToVector2();
             Vector2 dir = Vector2.Normalize(targetVec - this.GridPos);
 
-            Vector2 newPos = this.GridPos + (dir * deltaTime * 4.0f);
+            // [Updated] Use GameRules.MoveSpeed instead of hardcoded 4.0f
+            Vector2 newPos = this.GridPos + (dir * deltaTime * GameRules.MoveSpeed);
 
             // Snap to grid if close enough
             if (Vector2.Distance(this.GridPos, targetVec) < 0.1f)
