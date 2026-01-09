@@ -26,7 +26,7 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static ICondition Condition { get; private set; } = null!;
     [PluginService] internal static IPartyList? PartyList { get; private set; } = null!;
     [PluginService] internal static IGamepadState? GamepadState { get; private set; } = null!;
-
+    [PluginService] internal static IObjectTable ObjectTable { get; private set; } = null!;
     private const string CommandName = "/aetherbomber";
     private const string SecondCommandName = "/abomb2";
 
@@ -226,7 +226,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         if (flag == ConditionFlag.InCombat && !value)
         {
-            bool isDead = ClientState.LocalPlayer?.CurrentHp == 0;
+            bool isDead = ObjectTable.LocalPlayer?.CurrentHp == 0;
             if (isDead && !wasDead && Configuration.OpenOnDeath) { TitleWindow.IsOpen = true; }
             wasDead = isDead;
         }
