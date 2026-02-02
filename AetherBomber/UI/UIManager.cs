@@ -63,5 +63,18 @@ public static class UIManager
         currentY += buttonSpacing;
 
         DrawButtonWithOutline("About", "About", new Vector2(buttonX, currentY), buttonSize, openAbout);
+        var helpFontSize = 1.2f;
+        var line1 = "Controller support only atm:";
+        var line2 = "D-Pad + Face Button";
+        var line3 = "DISABLE CONTROLLER IN GAME!!!!";
+        var size1 = ImGui.CalcTextSize(line1) * helpFontSize;
+        var size2 = ImGui.CalcTextSize(line2) * helpFontSize;
+        var size3 = ImGui.CalcTextSize(line3) * helpFontSize;
+        var pos1 = new Vector2(windowPos.X + (MainWindow.ScaledWindowSize.X - size1.X) * 0.5f, windowPos.Y + MainWindow.ScaledWindowSize.Y - size1.Y - size2.Y - 25 * ImGuiHelpers.GlobalScale);
+        var pos2 = new Vector2(windowPos.X + (MainWindow.ScaledWindowSize.X - size2.X) * 0.5f, pos1.Y + size1.Y + 5 * ImGuiHelpers.GlobalScale);
+        var pos3 = new Vector2(windowPos.X + (MainWindow.ScaledWindowSize.X - size2.X) * 0.5f, pos1.Y + size1.Y + 20 * ImGuiHelpers.GlobalScale);
+        DrawTextWithOutline(drawList, line1, pos1, 0xFFAAAAAA, 0xFF000000, helpFontSize);
+        DrawTextWithOutline(drawList, line2, pos2, 0xFFAAAAAA, 0xFF000000, helpFontSize);
+        DrawTextWithOutline(drawList, line3, pos3, 0xFFAAAAAA, 0xFF0000FF, helpFontSize);
     }
 }

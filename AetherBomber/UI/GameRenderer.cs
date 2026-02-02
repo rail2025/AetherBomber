@@ -31,11 +31,12 @@ public class GameRenderer : IDisposable
         var gridPixelSize = new Vector2(GameBoard.GridWidth * cellSize, GameBoard.GridHeight * cellSize);
         var gridOrigin = contentMin + (contentSize - gridPixelSize - new Vector2(0, scoreboardHeight)) / 2;
 
-        DrawGameUI(drawList, contentMin, contentSize, session);
+        
         DrawGrid(drawList, gridOrigin, cellSize, session.GameBoard);
         DrawBombsAndExplosions(drawList, gridOrigin, cellSize, session);
         DrawCharacters(drawList, gridOrigin, cellSize, session.Characters);
         DrawScoreboard(drawList, contentMin, contentSize, session.Characters);
+        DrawGameUI(drawList, contentMin, contentSize, session);
 
         if (session.CurrentRoundState == RoundState.Countdown)
         {
@@ -47,11 +48,15 @@ public class GameRenderer : IDisposable
     {
         var time = TimeSpan.FromSeconds(session.StageTimer < 0 ? 0 : session.StageTimer);
         string timerText = $"{time.Minutes:D2}:{time.Seconds:D2}";
-        drawList.AddText(contentMin + new Vector2(10, 10), 0xFFFFFFFF, timerText);
+        //drawList.AddText(contentMin + new Vector2(10, 10), 0xFFFFFFFF, timerText);
 
         string restartText = "Restart";
         var buttonSize = ImGui.CalcTextSize(restartText) + (ImGui.GetStyle().FramePadding * 2);
-        var buttonPos = contentMin + new Vector2(contentSize.X - buttonSize.X - 10, 10);
+        var buttonPos = contentMin + new Vector2(contentSize.X - buttonSize.X - 10, contentSize.Y - (50 * ImGuiHelpers.GlobalScale) - buttonSize.Y + 20);
+
+        var timerSize = ImGui.CalcTextSize(timerText);
+        drawList.AddText(new Vector2(buttonPos.X - timerSize.X - 10, buttonPos.Y + (buttonSize.Y - timerSize.Y) / 2), 0xFFFFFFFF, timerText);
+
 
         ImGui.SetCursorScreenPos(buttonPos);
         if (ImGui.Button(restartText))
@@ -249,7 +254,7 @@ public class GameRenderer : IDisposable
 
         float iconSize = scoreboardHeight * 0.8f;
         float padding = (scoreboardHeight - iconSize) / 2;
-        float sectionWidth = contentSize.X / 4;
+        float sectionWidth = contentSize.X / 6;
 
         for (int i = 0; i < characters.Count; i++)
         {

@@ -2,7 +2,7 @@
     "Author": "rail",
     "Name": "AetherBomber",
     "Punchline": "A bomberman-clone game to play when dead.",
-    "Description": "Opens on death, or /aetherbomber. A Bomberman clone mini-game.",
+    "Description": "Opens on death, or /aetherbomber. A Bomberman clone mini-game. Controller only atm",
     "Changelog": "v0.0.0.4:placeholder cleanup\nv0.0.0.3: api 14\nv0.0.0.2:working ai, basic multiplayer",
     "IsHide": false,
     "InternalName": "AetherBomber",
