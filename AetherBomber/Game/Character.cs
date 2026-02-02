@@ -10,7 +10,6 @@ public class Character
     public CharacterType Type { get; }
     public Vector2 GridPos { get; set; }
 
-    // --- Bridge to Integer Grid ---
     public GridPos GridPosition => new GridPos((int)MathF.Round(GridPos.X), (int)MathF.Round(GridPos.Y));
 
     public Vector2 PixelPos { get; private set; }
@@ -21,7 +20,6 @@ public class Character
 
     public AIController? AiController { get; set; }
 
-    // --- AI Intent Queues ---
     private readonly System.Collections.Generic.Queue<GridPos> moveQueue = new();
     private bool bombQueued = false;
 
@@ -31,9 +29,6 @@ public class Character
     public void QueueBombPlacement() { this.bombQueued = true; }
 
     public void ClearQueue() { this.moveQueue.Clear(); this.bombQueued = false; }
-    // ----------------------------
-
-    // Animation State
     private Vector2 yeetVelocity = Vector2.Zero;
     private float yeetScale = 1.0f;
     private float yeetTimer = 0.0f;
@@ -47,25 +42,20 @@ public class Character
         GridPos = startPosition;
     }
 
-    // --- Method to execute the AI's orders ---
     public void ExecuteAIIntent(float deltaTime, GameSession session)
     {
-        // 1. Execute Move
         if (moveQueue.Count > 0)
         {
-            // Peek at the next target; only dequeue when reached
             GridPos currentTarget = moveQueue.Peek();
             Vector2 targetVec = currentTarget.ToVector2();
             Vector2 dir = Vector2.Normalize(targetVec - this.GridPos);
 
-            // [Updated] Use GameRules.MoveSpeed instead of hardcoded 4.0f
             Vector2 newPos = this.GridPos + (dir * deltaTime * GameRules.MoveSpeed);
 
-            // Snap to grid if close enough
             if (Vector2.Distance(this.GridPos, targetVec) < 0.1f)
             {
                 this.GridPos = targetVec;
-                moveQueue.Dequeue(); // Movement complete, remove from queue
+                moveQueue.Dequeue();
             }
             else if (session.IsTileWalkable(newPos))
             {
@@ -73,10 +63,8 @@ public class Character
             }
         }
 
-        // 2. Execute Bomb
         if (bombQueued)
         {
-            // Snap bomb position to integer grid to prevent blocking intersections
             var snapPos = this.GridPosition.ToVector2();
             if (!session.ActiveBombs.Any(b => b.GridPos == snapPos))
             {
@@ -85,8 +73,7 @@ public class Character
             bombQueued = false;
         }
     }
-    // ---------------------------------------------
-
+    
     public void Reset(Vector2 startPosition)
     {
         GridPos = startPosition;
@@ -94,7 +81,6 @@ public class Character
         IsBeingYeeted = false;
         yeetScale = 1.0f;
         yeetTimer = 0.0f;
-        // Clear AI memory
         ClearQueue();
     }
 

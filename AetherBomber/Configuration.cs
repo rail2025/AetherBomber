@@ -30,27 +30,18 @@ public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 1;
 
-    // General Settings
     public bool IsGameWindowLocked { get; set; } = true;
     public bool EnableDebug { get; set; } = false;
 
-    // High Score
     public int HighScore { get; set; } = 0;
 
-    // Audio Settings
     public bool IsBgmMuted { get; set; } = false;
     public bool IsSfxMuted { get; set; } = false;
     public float MusicVolume { get; set; } = 0.5f;
 
-    // --- Start of Changes ---
-    // A set to store the integer IDs of unlocked bonus music tracks.
     public HashSet<int> UnlockedBonusTracks { get; set; } = new();
-    // --- End of Changes ---
-
-    // Saved Game State
     public SavedGame? SavedGame { get; set; }
 
-    // Advanced Triggers
     public bool OpenOnDeath { get; set; } = true;
     public bool OpenInQueue { get; set; } = false;
     public bool OpenDuringCrafting { get; set; } = false;

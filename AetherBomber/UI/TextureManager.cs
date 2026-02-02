@@ -24,7 +24,7 @@ public class TextureManager : IDisposable
 
     private void LoadGameTextures()
     {
-        var textureNames = new[] { "bomb", "chest", "mirror", "dps", "healer", "tank", "bird" };
+        var textureNames = new[] { "bomb", "chest", "mirror", "dps", "healer", "tank", "bird", "wall" };
         foreach (var name in textureNames)
         {
             var texture = LoadTextureFromResource($"AetherBomber.Images.{name}.png");

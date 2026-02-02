@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics; // Needed for Vector2
+using System.Numerics;
 
 namespace AetherBomber.Game;
 

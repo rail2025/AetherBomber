@@ -1,4 +1,4 @@
-using System; // Needed for Math.Ceiling
+using System;
 using Dalamud.Bindings.ImGui;
 using System.Collections.Generic;
 using System.Numerics;
@@ -14,8 +14,6 @@ public class Bomb
     public bool IsExploding { get; private set; }
     public HashSet<Vector2> ExplosionPath { get; private set; } = new();
 
-    // AI calculates logic in 0.25s "Ticks". This converts float time to int ticks.
-    // Use GameRules.TickRate instead of hardcoded 0.25f
     public int FuseRemainingTicks => (int)Math.Ceiling(this.Timer / GameRules.TickRate);
 
     public Bomb(Vector2 gridPos, Character owner)

@@ -1,4 +1,3 @@
-// AetherBomber/Game/GameSession.cs
 using AetherBomber.Audio;
 using Dalamud.Game.ClientState.GamePad;
 using Dalamud.Plugin.Services;
@@ -32,7 +31,6 @@ public class GameSession
     private const float MoveDelay = 0.15f;
     private bool bombButtonPressedLastFrame = false;
 
-    // Single Player Constructor
     public GameSession(AudioManager audioManager)
     {
         this.audioManager = audioManager;
@@ -58,7 +56,6 @@ public class GameSession
         
     }
 
-    // Multiplayer Constructor
     public GameSession(AudioManager audioManager, int localPlayerNumber, int totalPlayers)
     {
         this.audioManager = audioManager;
@@ -95,7 +92,7 @@ public class GameSession
 
     public void RestartRound()
     {
-        GameBoard = new GameBoard(); // Create new random layout
+        GameBoard = new GameBoard();
         StartRound();
     }
 
@@ -177,7 +174,6 @@ public class GameSession
         if (character != null)
         {
             character.TriggerYeet(sourceBomb.GridPos);
-            // Award point if it's not suicide
             if (character != sourceBomb.Owner)
             {
                 sourceBomb.Owner.Score++;

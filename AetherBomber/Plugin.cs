@@ -1,4 +1,3 @@
-// AetherBomber/Plugin.cs
 using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;
@@ -47,7 +46,6 @@ public sealed class Plugin : IDalamudPlugin
     private bool wasDead = false;
     public MultiplayerGameSession? MultiplayerSession { get; private set; }
 
-    // This queue holds actions that need to be run on the main UI thread.
     public readonly ConcurrentQueue<Action> MainThreadActions = new();
 
     public Plugin()
@@ -155,14 +153,12 @@ public sealed class Plugin : IDalamudPlugin
     {
         if (MultiplayerSession == null) return;
 
-        // Close lobby windows
         MultiplayerWindow.IsOpen = false;
         if (secondMultiplayerWindow != null)
         {
             secondMultiplayerWindow.IsOpen = false;
         }
 
-        // Open game windows and start multiplayer sessions
         MainWindow.IsOpen = true;
         MainWindow.StartMultiplayerGame(1, MultiplayerSession.Players.Count);
 
@@ -188,7 +184,6 @@ public sealed class Plugin : IDalamudPlugin
 
         clientWindow.SetConnectionStatus("Connected", false);
 
-        // Also update the other client's lobby screen if it exists
         if (clientWindow == MultiplayerWindow)
         {
             Plugin.Log.Debug("[Plugin] Notifying second client window to update.");
@@ -203,7 +198,6 @@ public sealed class Plugin : IDalamudPlugin
 
     public void OnClientDisconnected(MultiplayerWindow clientWindow)
     {
-        // For simplicity, if one client disconnects, we end the session for both in local testing.
         MultiplayerSession = null;
         MultiplayerWindow.SetConnectionStatus("Disconnected", true);
         secondMultiplayerWindow?.SetConnectionStatus("Disconnected", true);

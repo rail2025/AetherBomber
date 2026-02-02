@@ -1,4 +1,3 @@
-// AetherBomber/Windows/MainWindow.cs
 using System;
 using System.Linq;
 using System.Numerics;
@@ -76,7 +75,6 @@ public class MainWindow : Window, IDisposable
             gameSession.StartNewGame();
         }
 
-        // Calculate cellSize here so it can be used by both Update and Draw
         var contentSize = ImGui.GetContentRegionAvail();
         float cellSize = Math.Min(contentSize.X / GameBoard.GridWidth, contentSize.Y / GameBoard.GridHeight);
 

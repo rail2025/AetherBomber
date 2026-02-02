@@ -4,14 +4,8 @@ using AetherBomber.Networking;
 
 namespace AetherBomber.Serialization
 {
-    /// <summary>
-    /// Handles the binary serialization and deserialization of the NetworkPayload object.
-    /// </summary>
     public static class PayloadSerializer
     {
-        /// <summary>
-        /// Serializes a NetworkPayload object into a byte array.
-        /// </summary>
         public static byte[] Serialize(NetworkPayload payload)
         {
             if (payload == null)
@@ -20,10 +14,8 @@ namespace AetherBomber.Serialization
             using (var memoryStream = new MemoryStream())
             using (var writer = new BinaryWriter(memoryStream))
             {
-                // Write the action type as a single byte.
                 writer.Write((byte)payload.Action);
 
-                // Write the data payload.
                 if (payload.Data != null && payload.Data.Length > 0)
                 {
                     writer.Write(payload.Data.Length);
@@ -38,9 +30,6 @@ namespace AetherBomber.Serialization
             }
         }
 
-        /// <summary>
-        /// Deserializes a byte array back into a NetworkPayload object.
-        /// </summary>
         public static NetworkPayload? Deserialize(byte[] data)
         {
             if (data == null || data.Length == 0)
@@ -53,15 +42,12 @@ namespace AetherBomber.Serialization
                 {
                     var payload = new NetworkPayload();
 
-                    // Read Action
                     if (reader.BaseStream.Position + sizeof(byte) > reader.BaseStream.Length) return null;
                     payload.Action = (PayloadActionType)reader.ReadByte();
 
-                    // Read data length
                     if (reader.BaseStream.Position + sizeof(int) > reader.BaseStream.Length) return null;
                     int dataLength = reader.ReadInt32();
 
-                    // Read data array
                     if (dataLength > 0)
                     {
                         if (reader.BaseStream.Position + dataLength > reader.BaseStream.Length) return null;

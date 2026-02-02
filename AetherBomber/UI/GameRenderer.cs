@@ -1,4 +1,3 @@
-// AetherBomber/UI/GameRenderer.cs
 using AetherBomber.Game;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Textures.TextureWraps;
@@ -81,8 +80,8 @@ public class GameRenderer : IDisposable
     {
         var chestTexture = textureManager.GetTexture("chest");
         var mirrorTexture = textureManager.GetTexture("mirror");
+        var wallTexture = textureManager.GetTexture("wall");
 
-        // Define block color here to ensure ImGui context is active
         uint blockColor = ImGui.GetColorU32(new Vector4(0.3f, 0.3f, 0.35f, 1.0f));
 
         for (int y = 0; y < GameBoard.GridHeight; y++)
@@ -94,7 +93,21 @@ public class GameRenderer : IDisposable
 
                 if (tile.Type == TileType.Wall)
                 {
-                    drawList.AddRectFilled(cellPos, cellPos + new Vector2(cellSize, cellSize), blockColor);
+                    if (wallTexture != null)
+                    {
+                        float ratio = (float)wallTexture.Height / wallTexture.Width;
+                        float spriteHeight = cellSize * ratio;
+
+                        var drawPos = cellPos - new Vector2(0, spriteHeight - cellSize);
+
+                        drawList.AddImage(
+                            wallTexture.Handle,
+                            drawPos,
+                            drawPos + new Vector2(cellSize, spriteHeight)
+                        );
+                    }
+                    else
+                        drawList.AddRectFilled(cellPos, cellPos + new Vector2(cellSize, cellSize), blockColor);
                 }
                 else if (tile.Type == TileType.Destructible)
                 {
@@ -110,10 +123,8 @@ public class GameRenderer : IDisposable
 
     private void DrawBombsAndExplosions(ImDrawListPtr drawList, Vector2 gridOrigin, float cellSize, GameSession session)
     {
-        // Define explosion color here
         uint explosionColor = ImGui.GetColorU32(new Vector4(1.0f, 0.2f, 0.1f, 1.0f));
 
-        // Draw all bombs and explosions based on the current state
         foreach (var bomb in session.ActiveBombs)
         {
             if (bomb.IsExploding)
@@ -141,12 +152,9 @@ public class GameRenderer : IDisposable
         }
     }
 
-    // This is now purely for calculation, not drawing.
     private HashSet<Vector2> GetExplosionPath(Bomb bomb, GameSession session)
     {
         var path = new HashSet<Vector2>();
-
-        // Calculate each ray's path and add it to the total path
         path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(0, 0), session)); // Center
         path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(1, 0), session));  // Right
         path.UnionWith(CalculateRay(bomb.GridPos, new Vector2(-1, 0), session)); // Left
@@ -189,7 +197,6 @@ public class GameRenderer : IDisposable
     {
         var windowPos = ImGui.GetWindowPos();
         var windowSize = ImGui.GetWindowSize();
-        // Define character outline color here
         uint characterOutlineColor = ImGui.GetColorU32(new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
         foreach (var character in characters)

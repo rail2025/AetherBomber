@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics; // Needed for vector conversion
+using System.Numerics;
 
 namespace AetherBomber.Game;
 
@@ -30,9 +30,8 @@ public class AIController
         if (me.HasQueuedActions) return;
 
         var threats = new AIThreatMap(session);
-        var myPos = me.GridPosition; // Use the integer grid property
+        var myPos = me.GridPosition;
 
-        // 1. SURVIVAL
         if (threats.IsDangerAt(myPos, 0))
         {
             var safe = FindNearestSafeTile(myPos, threats);
@@ -42,15 +41,12 @@ public class AIController
             return;
         }
 
-        // 2. OFFENSE
         if (TryKill(threats))
             return;
 
-        // 3. FARMING
         if (TryFarmCrate(threats))
             return;
 
-        // 4. ROAMING / SEEK ENEMY
         WanderOrChase(threats);
     }
 
@@ -64,7 +60,6 @@ public class AIController
 
             var explosion = session.CalculateExplosionPath(new Bomb(me.GridPos, me));
 
-            // Check if enemy is in the blast path
             if (explosion.Any(v => (int)v.X == enemy.GridPosition.X && (int)v.Y == enemy.GridPosition.Y))
             {
                 var escapePath = escapeSim.CanEscape(me.GridPosition, me.GridPosition);
@@ -100,16 +95,13 @@ public class AIController
 
     private void WanderOrChase(AIThreatMap threats)
     {
-        // Target enemy first. If unreachable (path blocked), target nearest crate to break it.
         var enemyTarget = FindRoamTarget();
 
         if (!MoveAlong(enemyTarget, threats))
         {
-            // "Breaker Mode": Find nearest crate and path to its neighbor
             var crate = FindNearestCrate();
             if (crate.HasValue)
             {
-                // If next to crate, bomb it (if safe)
                 if (GridPos.Manhattan(me.GridPosition, crate.Value) == 1)
                 {
                     var escapePath = escapeSim.CanEscape(me.GridPosition, me.GridPosition);
@@ -118,7 +110,6 @@ public class AIController
                 }
                 else
                 {
-                    // Try to move to any valid neighbor of the crate
                     foreach (var dir in GridPos.Cardinal)
                     {
                         var neighbor = crate.Value + dir;
@@ -132,7 +123,6 @@ public class AIController
 
     private GridPos FindRoamTarget()
     {
-        // Target nearest active enemy instead of center
         GridPos best = new GridPos(session.GameBoard.Width / 2, session.GameBoard.Height / 2);
         float minDst = float.MaxValue;
 
@@ -145,7 +135,6 @@ public class AIController
         return best;
     }
 
-    // Return bool to indicate if a path was found
     private bool MoveAlong(GridPos target, AIThreatMap threats)
     {
         var path = pathfinder.FindPath(me.GridPosition, target, threats);
@@ -156,7 +145,6 @@ public class AIController
         return true;
     }
 
-    // Helper for Breaker Mode
     private GridPos? FindNearestCrate()
     {
         GridPos? best = null;
@@ -186,7 +174,6 @@ public class AIController
         {
             var (p, t) = q.Dequeue();
 
-            // The destination must be safe indefinitely (not just "not exploding yet")
             if (threats.GetDangerTime(p) == AIThreatMap.Safe)
                 return p;
 
@@ -194,7 +181,6 @@ public class AIController
             {
                 var next = p + dir;
 
-                // Only traverse tiles that are NOT dangerous at the time of arrival (t+1)
                 if (!visited.Contains(next) && session.IsTileWalkable(next.ToVector2()))
                 {
                     if (!threats.IsDangerAt(next, t + 1))
@@ -210,7 +196,6 @@ public class AIController
     private void ExecuteBombAndEscape(List<GridPos> escapePath)
     {
         me.QueueBombPlacement();
-        // Skip index 0 (current position), queue the rest
         for (int i = 1; i < escapePath.Count; i++)
         {
             me.QueueMove(escapePath[i]);

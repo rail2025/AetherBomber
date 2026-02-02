@@ -49,7 +49,6 @@ public class AIThreatMap
     public int GetDangerTime(GridPos g)
         => InBounds(g) ? dangerTimes[g.X, g.Y] : 0;
 
-    /// <summary>Returns true if tile explodes *at or before* arrivalTurn.</summary>
     public bool IsDangerAt(GridPos g, int arrivalTurn)
     {
         int danger = GetDangerTime(g);

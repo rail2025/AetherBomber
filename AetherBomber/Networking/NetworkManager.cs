@@ -7,21 +7,17 @@ using AetherBomber.Serialization;
 
 namespace AetherBomber.Networking
 {
-    /// <summary>
-    /// Manages the WebSocket connection for AetherBomber multiplayer.
-    /// </summary>
     public class NetworkManager : IDisposable
     {
         private ClientWebSocket? webSocket;
         private CancellationTokenSource? cancellationTokenSource;
 
-        // The "OnConnected" event now includes the passphrase string.
         public event Action<string>? OnConnected;
         public event Action? OnDisconnected;
         public event Action<string>? OnError;
-        public event Action<int>? OnAttackReceived; // Carries junk row count
-        public event Action<byte[]>? OnGameStateUpdateReceived; // Carries opponent board state
-        public event Action<PayloadActionType>? OnMatchControlReceived; // Carries ready, rematch, etc.
+        public event Action<int>? OnAttackReceived;
+        public event Action<byte[]>? OnGameStateUpdateReceived;
+        public event Action<PayloadActionType>? OnMatchControlReceived;
         public event Action? OnStartGameReceived;
 
         public bool IsConnected => webSocket?.State == WebSocketState.Open;
@@ -40,7 +36,6 @@ namespace AetherBomber.Networking
                 await webSocket.ConnectAsync(connectUri, cancellationTokenSource.Token);
                 Plugin.Log.Debug("[NetworkManager] Connection successful.");
 
-                // When the connection is successful, we now send the passphrase along with the signal.
                 OnConnected?.Invoke(passphrase);
                 Plugin.Log.Debug("[NetworkManager] OnConnected event invoked.");
                 _ = Task.Run(() => StartListening(cancellationTokenSource.Token));
@@ -97,7 +92,7 @@ namespace AetherBomber.Networking
                         HandleReceivedMessage(ms.ToArray());
                 }
             }
-            catch (OperationCanceledException) { /* Expected */ }
+            catch (OperationCanceledException) {}
             catch (Exception ex)
             {
                 OnError?.Invoke($"Network error: {ex.Message}");

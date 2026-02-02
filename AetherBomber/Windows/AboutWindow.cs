@@ -8,30 +8,17 @@ using Dalamud.Interface.Utility.Raii;
 
 namespace AetherBomber.Windows;
 
-/// <summary>
-/// A window to display information about the plugin, such as version, author, and support links.
-/// </summary>
 public class AboutWindow : Window, IDisposable
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AboutWindow"/> class.
-    /// </summary>
     public AboutWindow() : base("About AetherBomber")
     {
-        // CHANGE: Increased window width to prevent text wrapping.
         this.Size = new Vector2(380, 250);
         this.SizeCondition = ImGuiCond.FirstUseEver;
         this.Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
     }
 
-    /// <summary>
-    /// Disposes of resources used by the window.
-    /// </summary>
     public void Dispose() { }
 
-    /// <summary>
-    /// Draws the content of the About window.
-    /// </summary>
     public override void Draw()
     {
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0";
@@ -49,7 +36,6 @@ public class AboutWindow : Window, IDisposable
 
         float btnWidthFull = ImGui.GetContentRegionAvail().X;
 
-        // --- GitHub Issues Button ---
         float bugReportButtonHeight = ImGui.CalcTextSize("Bug report/\nFeature request").Y + ImGui.GetStyle().FramePadding.Y * 2.0f;
 
         using (ImRaii.PushColor(ImGuiCol.Button, new Vector4(0.1f, 0.4f, 0.1f, 1.0f)))
@@ -69,7 +55,6 @@ public class AboutWindow : Window, IDisposable
 
         ImGui.Spacing();
 
-        // --- Support Button ---
         string buttonText = "Donate & Support";
 
         var buttonColor = new Vector4(0.9f, 0.2f, 0.2f, 1.0f);
