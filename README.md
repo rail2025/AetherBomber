@@ -45,3 +45,7 @@ move, button click to place bomb.
 
 does it really matter?
 
+## Development
+
+* [Architecture Overview](architecture.md)
+* [Contributing Guidelines](contributing.md)
