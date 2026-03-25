@@ -22,6 +22,7 @@ public class GameSession
     public RoundState CurrentRoundState { get; private set; }
     public float StageTimer { get; private set; }
     public float StartCountdownTimer { get; private set; }
+    public float RoundOverTimer { get; private set; }
     public int CurrentStage { get; private set; } = 1;
 
     private readonly AudioManager audioManager;
@@ -124,6 +125,7 @@ public class GameSession
         ActiveBombs.Clear();
         StageTimer = 120.0f;
         StartCountdownTimer = 5.0f;
+        RoundOverTimer = 3.0f;
         CurrentRoundState = RoundState.Countdown;
     }
 
@@ -146,10 +148,8 @@ public class GameSession
             {
                 foreach (var character in Characters)
                 {
-                    // 1. Brain Update
                     character.AiController?.Update();
 
-                    // 2. Body Update
                     character.ExecuteAIIntent(deltaTime, this);
                 }
             }
@@ -164,9 +164,21 @@ public class GameSession
                 }
                 CurrentRoundState = RoundState.RoundOver;
             }
-            if (StageTimer <= 0)
+            else if (StageTimer <= 0)
             {
+                foreach (var character in Characters.Where(c => c.IsActive))
+                {
+                    character.Score++;
+                }
                 CurrentRoundState = RoundState.RoundOver;
+            }
+        }
+        else if (CurrentRoundState == RoundState.RoundOver)
+        {
+            RoundOverTimer -= deltaTime;
+            if (RoundOverTimer <= 0)
+            {
+                AdvanceToNextStage();
             }
         }
 

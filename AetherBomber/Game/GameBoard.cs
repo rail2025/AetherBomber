@@ -66,24 +66,73 @@ public class GameBoard
 
     private void GenerateWalls(int stageNumber)
     {
-        for (int y = 0; y < GridHeight; y++)
+        int attempts = 0;
+        const int maxAttempts = 10;
+        bool isConnected = false;
+
+        while (!isConnected && attempts < maxAttempts)
         {
-            for (int x = 0; x < GridWidth; x++)
+            attempts++;
+            int totalEmpty = 0;
+
+            for (int y = 0; y < GridHeight; y++)
             {
-                bool isBorder = x == 0 || x == GridWidth - 1 || y == 0 || y == GridHeight - 1;
-
-                bool isProceduralWall = (x % 2 == 0 && y % 2 == 0) ||
-                                        (!IsSafeZone(x, y) && Random.Shared.NextDouble() < GameRules.ProceduralWallChance);
-
-                bool isHardWall = isBorder || (stageNumber == 1 ? Stage1Layout[y, x] == 1 : isProceduralWall);
-
-                this.grid[y, x] = new Tile
+                for (int x = 0; x < GridWidth; x++)
                 {
-                    Type = isHardWall ? TileType.Wall : TileType.Empty,
-                    HasPowerUp = false
-                };
+                    bool isBorder = x == 0 || x == GridWidth - 1 || y == 0 || y == GridHeight - 1;
+                    bool isProceduralWall = (x % 2 == 0 && y % 2 == 0) ||
+                                            (!IsSafeZone(x, y) && Random.Shared.NextDouble() < GameRules.ProceduralWallChance);
+                    bool isHardWall = isBorder || (stageNumber == 1 ? Stage1Layout[y, x] == 1 : isProceduralWall);
+
+                    this.grid[y, x] = new Tile
+                    {
+                        Type = isHardWall ? TileType.Wall : TileType.Empty,
+                        HasPowerUp = false
+                    };
+
+                    if (!isHardWall) totalEmpty++;
+                }
+            }
+
+            if (stageNumber == 1 || ValidateConnectivity(totalEmpty))
+            {
+                isConnected = true;
             }
         }
+    }
+    private bool ValidateConnectivity(int totalNonWallTiles)
+    {
+        var visited = new bool[GridHeight, GridWidth];
+        var queue = new Queue<(int x, int y)>();
+        int reachableCount = 0;
+
+        // Start BFS from a guaranteed safe zone tile
+        queue.Enqueue((1, 1));
+        visited[1, 1] = true;
+
+        while (queue.Count > 0)
+        {
+            var (cx, cy) = queue.Dequeue();
+            reachableCount++;
+
+            int[] dx = { 0, 0, 1, -1 };
+            int[] dy = { 1, -1, 0, 0 };
+
+            for (int i = 0; i < 4; i++)
+            {
+                int nx = cx + dx[i];
+                int ny = cy + dy[i];
+
+                if (nx >= 0 && nx < GridWidth && ny >= 0 && ny < GridHeight &&
+                    !visited[ny, nx] && grid[ny, nx].Type != TileType.Wall)
+                {
+                    visited[ny, nx] = true;
+                    queue.Enqueue((nx, ny));
+                }
+            }
+        }
+
+        return reachableCount >= totalNonWallTiles * 0.9;
     }
 
     private void PlaceDestructibles()

@@ -31,11 +31,11 @@ public class GameRenderer : IDisposable
         var gridPixelSize = new Vector2(GameBoard.GridWidth * cellSize, GameBoard.GridHeight * cellSize);
         var gridOrigin = contentMin + (contentSize - gridPixelSize - new Vector2(0, scoreboardHeight)) / 2;
 
-        
-        DrawGrid(drawList, gridOrigin, cellSize, session.GameBoard);
+
+        DrawGrid(drawList, gridOrigin, cellSize, session);
         DrawBombsAndExplosions(drawList, gridOrigin, cellSize, session);
         DrawCharacters(drawList, gridOrigin, cellSize, session.Characters);
-        DrawScoreboard(drawList, contentMin, contentSize, session.Characters);
+        DrawScoreboard(drawList, contentMin, contentSize, session.Characters, session.CurrentStage);
         DrawGameUI(drawList, contentMin, contentSize, session);
 
         if (session.CurrentRoundState == RoundState.Countdown)
@@ -81,13 +81,19 @@ public class GameRenderer : IDisposable
         drawList.AddText(ImGui.GetFont(), fontSize, textPos, 0xFFFFFFFF, text);
     }
 
-    private void DrawGrid(ImDrawListPtr drawList, Vector2 gridOrigin, float cellSize, GameBoard gameBoard)
+    private void DrawGrid(ImDrawListPtr drawList, Vector2 gridOrigin, float cellSize, GameSession session)
     {
+        var gameBoard = session.GameBoard;
         var chestTexture = textureManager.GetTexture("chest");
         var mirrorTexture = textureManager.GetTexture("mirror");
         var wallTexture = textureManager.GetTexture("wall");
 
         uint blockColor = ImGui.GetColorU32(new Vector4(0.3f, 0.3f, 0.35f, 1.0f));
+
+        uint wallColor = 0xFFFFFFFF;
+        if (session.CurrentStage % 4 == 2) wallColor = ImGui.GetColorU32(new Vector4(0.6f, 1.0f, 0.6f, 1.0f));
+        else if (session.CurrentStage % 4 == 3) wallColor = ImGui.GetColorU32(new Vector4(0.6f, 0.6f, 1.0f, 1.0f));
+        else if (session.CurrentStage % 4 == 0) wallColor = ImGui.GetColorU32(new Vector4(1.0f, 0.6f, 1.0f, 1.0f));
 
         for (int y = 0; y < GameBoard.GridHeight; y++)
         {
@@ -108,7 +114,10 @@ public class GameRenderer : IDisposable
                         drawList.AddImage(
                             wallTexture.Handle,
                             drawPos,
-                            drawPos + new Vector2(cellSize, spriteHeight)
+                            drawPos + new Vector2(cellSize, spriteHeight),
+                            Vector2.Zero,
+                            Vector2.One,
+                            wallColor
                         );
                     }
                     else
@@ -243,7 +252,7 @@ public class GameRenderer : IDisposable
         }
     }
 
-    private void DrawScoreboard(ImDrawListPtr drawList, Vector2 contentMin, Vector2 contentSize, List<Character> characters)
+    private void DrawScoreboard(ImDrawListPtr drawList, Vector2 contentMin, Vector2 contentSize, List<Character> characters, int currentStage)
     {
         float scoreboardHeight = 50 * ImGuiHelpers.GlobalScale;
         Vector2 scoreboardPos = new Vector2(contentMin.X, contentMin.Y + contentSize.Y - scoreboardHeight);
@@ -292,6 +301,11 @@ public class GameRenderer : IDisposable
             var scoreColor = character.IsActive ? 0xFFFFFFFF : 0xFF808080;
             drawList.AddText(textPos, scoreColor, scoreText);
         }
+
+        string stageText = $"STAGE {currentStage}";
+        Vector2 stageTextSize = ImGui.CalcTextSize(stageText);
+        Vector2 stageTextPos = new Vector2(contentMin.X + contentSize.X - stageTextSize.X - 20, scoreboardPos.Y + (scoreboardHeight - stageTextSize.Y) / 2);
+        drawList.AddText(stageTextPos, 0xFFFFFFFF, stageText);
     }
 
     public void Dispose() { }

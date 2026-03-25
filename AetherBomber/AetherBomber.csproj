@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Dalamud.NET.Sdk/14.0.1">
   <PropertyGroup>
-    <Version>0.0.0.4</Version>
+    <Version>0.0.0.5</Version>
     <TargetFramework>net10.0</TargetFramework>
     <Description>A bomberman-clone game to play when dead. Open with /aetherbomber. Controller only atm</Description>
     <PackageProjectUrl>https://github.com/rail2025/AetherBomber</PackageProjectUrl>
