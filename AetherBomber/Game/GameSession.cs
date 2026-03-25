@@ -22,6 +22,7 @@ public class GameSession
     public RoundState CurrentRoundState { get; private set; }
     public float StageTimer { get; private set; }
     public float StartCountdownTimer { get; private set; }
+    public int CurrentStage { get; private set; } = 1;
 
     private readonly AudioManager audioManager;
     private readonly bool isMultiplayer;
@@ -86,13 +87,22 @@ public class GameSession
     public void StartNewGame()
     {
         foreach (var character in Characters) character.Score = 0;
+        CurrentStage = 1;
+        GameBoard = new GameBoard(CurrentStage);
         StartRound();
         this.audioManager.StartBgmPlaylist();
     }
 
     public void RestartRound()
     {
-        GameBoard = new GameBoard();
+        GameBoard = new GameBoard(CurrentStage);
+        StartRound();
+    }
+
+    public void AdvanceToNextStage()
+    {
+        CurrentStage++;
+        GameBoard = new GameBoard(CurrentStage);
         StartRound();
     }
 
